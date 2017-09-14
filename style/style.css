@@ -1,0 +1,156 @@
+QLabel#logo{
+        background-image: url(:/image/cloud-logo.png);
+        /*background-image: url(:/image/logo.png);*/
+	background-repeat:no-repeat;
+        background-position:center center;
+        padding-left:100px;
+}
+
+QLabel#logoLabel,#loginLogoLabel{
+        background-image: url(:/image/cloud-logo.png);
+        background-repeat:no-repeat;
+        background-position:center center;
+        padding-left:100px;
+}
+
+QLabel,QPushButton{
+    font: 12px "Microsoft YaHei";
+}
+
+QWidget,QDialog{
+    font: 12px "Microsoft YaHei";
+}
+
+QDialog,QWidget#top_tool_widget{background-color:rgb(0, 160, 234)}
+QWidget#topwidget{background-color:rgb(0, 160, 234)}
+
+.QPushButton{
+        border-radius:0px;
+        border-color:#2dabf9;
+
+	color:#000000;
+        padding: 6px 15px;
+	margin:0px;
+}
+
+QPushButton#closePtn{
+    background-image:url(:/image/close.png);
+    background-repeat:no-repeat;
+    background-color:rgba(255,255,255,0);
+}
+
+QPushButton#closePtn::hover{
+        background-color:rgba(125,221,246,150);
+}
+
+QPushButton#closePtn::pressed{
+        background-color:rgb(125,221,246,200);
+}
+
+QPushButton#maxPtn{
+    background-image:url(:/image/maximum.png);
+    background-repeat:no-repeat;
+    background-color:rgba(255,255,255,0);
+}
+
+QPushButton#maxPtn::hover{
+        background-color:rgba(125,221,246,150);
+}
+
+QPushButton#maxPtn::pressed{
+        background-color:rgb(125,221,246,200);
+}
+
+QPushButton#minPtn{
+    background-image:url(:/image/minimum.png);
+    background-repeat:no-repeat;
+    background-color:rgba(255,255,255,0);
+}
+
+QPushButton#minPtn::hover{
+        background-color:rgba(125,221,246,150);
+}
+
+QPushButton#minPtn::pressed{
+        background-color:rgb(125,221,246,200);
+}
+
+
+QPushButton#VMButton{
+    background-repeat:no-repeat;
+    background-position:center center;
+    background-attachment:fixed;
+
+    background-color:rgba(255,255,255,0);
+
+    background-image: url(:/image/vm_new.png);
+}
+
+QPushButton#VMButton:hover{
+        background-color:rgba(200,200,200,150);
+}
+QPushButton#VMButton:pressed{
+        background-color:rgba(255,255,255,200);
+}
+
+QLabel#label_vmName{
+    font-size:18pt "Microsoft YaHei";
+}
+
+/*Qmenu Style Sheets*/
+ QMenu {
+     background-color: white; /* sets background of the menu 设置整个菜单区域的背景色，我用的是白色：white*/
+     border: 1px solid white;/*整个菜单区域的边框粗细、样式、颜色*/
+
+    font-size:18pt "Microsoft YaHei";
+ }
+ QMenu::item {
+     /* sets background of menu item. set this to something non-transparent
+         if you want menu color and menu item color to be different */
+     background-color: transparent;
+     padding:8px 32px;/*设置菜单项文字上下和左右的内边距，效果就是菜单中的条目左右上下有了间隔*/
+     margin:0px 8px;/*设置菜单项的外边距*/
+     border-bottom:1px solid #DBDBDB;/*为菜单项之间添加横线间隔*/
+
+ }
+ QMenu::item:selected { /* when user selects item using mouse or keyboard */
+     background-color: #2dabf9;/*这一句是设置菜单项鼠标经过选中的样式*/
+ }
+
+QWidget#mainWidget{
+        border-image:url(:/image/home-background.png);
+	background-repeat:no-repeat;
+        background-position:center center;
+}
+
+QPushButton#loginPushButton{
+    border-radius:1px;
+    border-color:#2dabf9;
+
+    color:#000000;
+    padding: 6px 15px;
+    margin:0px;
+}
+QPushButton#loginPushButton::hover{
+        background-color:rgba(125,221,246,150);
+}
+
+QPushButton#loginPushButton::pressed{
+        background-color:rgb(125,221,246,200);
+}
+
+QPushButton#quitPushButton{
+    border-radius:1px;
+    border-color:#2dabf9;
+
+    color:#000000;
+    padding: 6px 15px;
+    margin:0px;
+}
+QPushButton#quitPushButton::hover{
+        background-color:rgba(125,221,246,150);
+}
+
+QPushButton#quitPushButton::pressed{
+        background-color:rgb(125,221,246,200);
+}
