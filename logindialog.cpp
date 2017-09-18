@@ -1,14 +1,16 @@
 #include <QDesktopWidget>
+#include<QMessageBox>
 #include <qdebug.h>
 #include <QEvent>
 #include <QMouseEvent>
 #include <QShortcut>
-
+#include <QMetaType>
 #include "logindialog.h"
 #include "ui_logindialog.h"
 
-LoginDialog::LoginDialog(QWidget *parent) :
+LoginDialog::LoginDialog(UserInfo &usrInfo, QWidget *parent) :
     QDialog(parent),
+    m_userInfo(usrInfo),
     ui(new Ui::LoginDialog)
 {
     ui->setupUi(this);
@@ -26,11 +28,43 @@ LoginDialog::LoginDialog(QWidget *parent) :
 
     QShortcut *key=new QShortcut(QKeySequence(Qt::Key_Enter), this);// 创建一个快捷键"Key_Return"键
     connect(key, SIGNAL(activated()), this, SLOT(on_loginPushButton_clicked()));//连接到指定槽函数
+
+    //thread
+    worker = new Worker;
+    worker->moveToThread(&workerThread);
+    qRegisterMetaType<UserInfo> ("UserInfo &");
+    connect(&workerThread, &QThread::finished, worker, &QObject::deleteLater);
+    connect(this, &LoginDialog::operate, worker, &Worker::doLogin);
+    connect(worker, &Worker::loginReady, this, &LoginDialog::handleLoginRes);
+    workerThread.start();
+}
+
+bool LoginDialog::Login()
+{
+    QString cmd = "/root/getLoginStatus.py "+m_userInfo.uname+" "+m_userInfo.pwd+" "+serverIP + " 2>&1";
+    QString res = GetCmdRes(cmd).trimmed();
+    QStringList list = res.split('\n');
+    if(list.size()<1)
+    {
+        qDebug()<<tr("Login failed: printed info nums less than 2");
+        return false;
+    }
+    if(list.first()=="login success")
+    {
+        m_userInfo.uid = list.last();
+        return true;
+    }else
+    {
+        m_userInfo.uid = "";
+        return false;
+    }
 }
 
 LoginDialog::~LoginDialog()
 {
     delete ui;
+    workerThread.quit();
+    workerThread.wait();
 }
 
 /*鼠标按下事件*/
@@ -64,8 +98,8 @@ void LoginDialog::on_loginPushButton_clicked()
 {
     int pos = 0;
     this->serverIP = ui->serverLineEdit->text();
-    QString username = ui->usernameLineEdit->text();
-    QString password=ui->passwdLineEdit->text();
+    m_userInfo.uname = ui->usernameLineEdit->text();
+    m_userInfo.pwd=ui->passwdLineEdit->text();
 
     if(this->serverIP.isEmpty())
     {
@@ -85,7 +119,7 @@ void LoginDialog::on_loginPushButton_clicked()
 
     ui->serverLineEdit->setStyleSheet("background-color: white;");
 
-    if (username.isEmpty())
+    if (m_userInfo.uname.isEmpty())
     {
         ui->usernameLineEdit->setFocus();
         ui->usernameLineEdit->setCursorPosition(ui->usernameLineEdit->text().length());
@@ -95,7 +129,7 @@ void LoginDialog::on_loginPushButton_clicked()
 
     ui->usernameLineEdit->setStyleSheet("background-color: white;");
 
-    if(password.isEmpty())
+    if(m_userInfo.pwd.isEmpty())
     {
         ui->passwdLineEdit->setFocus();
         ui->passwdLineEdit->setCursorPosition(ui->passwdLineEdit->text().length());
@@ -104,18 +138,24 @@ void LoginDialog::on_loginPushButton_clicked()
     }
 
     ui->passwdLineEdit->setStyleSheet("background-color: white;");
+    worker->setSvrIP(serverIP);
+    emit operate(m_userInfo);
+    waitDiaogAppear();
+//    if(Login())
+//        accept();
+//    else
+//        QMessageBox::warning(this, "警告", "登录失败,请确认用户名和密码无误");
+}
 
-    if(username != "admin" || password != "123456")
-    {
-        ui->usernameLineEdit->setFocus();
-        ui->usernameLineEdit->setCursorPosition(ui->usernameLineEdit->text().length());
-        ui->passwdLineEdit->clear();
-        ui->error_label->setText("用户名或密码错误!");
-        return;
-    }
-    else
+void LoginDialog::handleLoginRes(bool success)
+{
+    waitDialogAccept();
+    if(success)
     {
         accept();
+    }else
+    {
+        QMessageBox::warning(this, "警告", "登录失败,请确认用户名和密码无误");
     }
 }
 
@@ -129,3 +169,19 @@ void LoginDialog::moveToCenter()
     QDesktopWidget* desktop = QApplication::desktop();
     move((desktop->width() - this->width())/2, (desktop->height() - this->height())/2);
 }
+
+void LoginDialog::waitDialogAccept()
+{
+    waitD->accept();
+    delete waitD;
+}
+
+void LoginDialog::waitDiaogAppear()
+{
+    waitD = new WaitDialog(this);
+    waitD->exec();
+  //  waitD->deleteLater();
+}
+
+
+

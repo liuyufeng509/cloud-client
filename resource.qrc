@@ -1,54 +1,34 @@
 <RCC>
-    <qresource prefix="/">
-        <file>style/style_english.css</file>
-        <file>style/style.css</file>
-        <file>lang/lang_en_US.qm</file>
-        <file>lang/lang_en_US.ts</file>
-        <file>lang/lang_zh_CN.qm</file>
-        <file>lang/lang_zh_CN.ts</file>
-        <file>image/active_vm.png</file>
-        <file>image/boot_setting_press.png</file>
-        <file>image/boot_setting.png</file>
-        <file>image/citrix.png</file>
-        <file>image/close.png</file>
-        <file>image/cloud_logo.png</file>
-        <file>image/cloud-logo.png</file>
-        <file>image/conversation_nonclick.png</file>
-        <file>image/conversation_normal.png</file>
-        <file>image/down_arrow.png</file>
-        <file>image/down_arrow2.png</file>
-        <file>image/down_arrow3.png</file>
-        <file>image/home-background-new.png</file>
-        <file>image/home-background.png</file>
-        <file>image/list_arrow_down.png</file>
-        <file>image/list_arrow_right.png</file>
-        <file>image/lock.png</file>
-        <file>image/logo_english.png</file>
-        <file>image/logo.png</file>
-        <file>image/maximum.png</file>
-        <file>image/message.png</file>
-        <file>image/minimum.png</file>
-        <file>image/power_lock.png</file>
-        <file>image/power_poweroff.png</file>
-        <file>image/power_reboot.png</file>
-        <file>image/power_sleep.png</file>
-        <file>image/power_suspend.png</file>
-        <file>image/rdp.png</file>
-        <file>image/selectbox_normal.png</file>
-        <file>image/selectbox_select.png</file>
-        <file>image/selectcircle_normal.png</file>
-        <file>image/selectcircle_select.png</file>
-        <file>image/setting.png</file>
-        <file>image/signin_nonclick.png</file>
-        <file>image/signin_normal.png</file>
-        <file>image/spice.png</file>
-        <file>image/sys_info.png</file>
-        <file>image/system-poweroff.png</file>
-        <file>image/system-reboot.png</file>
-        <file>image/systeminfo.png</file>
-        <file>image/unlock.png</file>
-        <file>image/usb_disable.ico</file>
-        <file>image/vm_new.png</file>
-        <file>image/vmware.png</file>
+    <qresource prefix="/new/index">
+        <file alias="loading.gif">image/loading.gif</file>
+        <file alias="close">image/close.png</file>
+        <file alias="max">image/max.png</file>
+        <file alias="min">image/min.png</file>
+        <file alias="resume">image/resume.png</file>
+        <file alias="title">image/title.png</file>
+        <file alias="taskbar">image/taskbar.png</file>
+        <file alias="close_hover">image/close_hover.png</file>
+        <file alias="close_ord">image/close_ord.png</file>
+        <file alias="close_pre">image/close_pre.png</file>
+        <file alias="max_hover">image/max_hover.png</file>
+        <file alias="max_ord">image/max_ord.png</file>
+        <file alias="max_pre">image/max_pre.png</file>
+        <file alias="min_hover">image/min_hover.png</file>
+        <file alias="min_ord">image/min_ord.png</file>
+        <file alias="min_pre">image/min_pre.png</file>
+        <file alias="resume_hover">image/resume_hover.png</file>
+        <file alias="resume_ord">image/resume_ord.png</file>
+        <file alias="resume_pre">image/resume_pre.png</file>
+        <file alias="tab">image/tab.png</file>
+        <file alias="mainwintitle">image/title1.png</file>
+        <file alias="down_namal">image/down_normal.png</file>
+        <file alias="down_namal_hover">image/down_normal_hover.png</file>
+        <file alias="down_namal_press">image/down_normal_press.png</file>
+        <file alias="run_namal">image/run_nomal.png</file>
+        <file alias="run_namal_hover">image/run_nomal_hover.png</file>
+        <file alias="run_namal_press">image/run_nomal_press.png</file>
+    </qresource>
+    <qresource prefix="/new/qss">
+        <file alias="style">style/style.qss</file>
     </qresource>
 </RCC>

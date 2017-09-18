@@ -1,0 +1,258 @@
+.QWidget
+{
+    background-color:white ;
+}
+/*中心窗口*/
+QWidget#centralwidget
+{
+   /* background-color:rgb(33,46,19) ;*/
+   background-color:white;
+}
+/*按钮QPushButton*/
+QPushButton#freshButton {
+    border: 1px solid white;
+    border-radius: 0px;
+    color:white;
+    font-weight:bold;
+    background-color:#50a495;
+    min-width:70px;
+}
+QPushButton#freshButton:hover {
+    border: 1px solid white;
+    border-radius: 0px;
+    color:white;
+    font-weight:normal;
+    background-color:#2a564e;
+}
+QPushButton#freshButton:pressed {
+    border: 1px solid white;
+    border-radius: 0px;
+    color:white;
+    font-weight:bold;
+    background-color:#50a495;
+}
+
+QPushButton#logoutButton {
+    border: 1px solid white;
+    border-radius: 0px;
+    color:white;
+    font-weight:bold;
+    background-color:#50a495;
+    min-width:70px;
+}
+QPushButton#logoutButton:hover {
+    border: 1px solid white;
+    border-radius: 0px;
+    color:white;
+    font-weight:normal;
+    background-color:#2a564e;
+}
+QPushButton#logoutButton:pressed {
+    border: 1px solid white;
+    border-radius: 0px;
+    color:white;
+    font-weight:bold;
+    background-color:#50a495;
+}
+
+
+
+
+/*标题栏关闭按钮设置*/
+QMainWindow#HomeWindow>QWidget#TitleBar>QPushButton#ButtonClose {
+border: none;
+image: url(:/new/index/close_ord);
+/*background-color:#2a564e;*/
+background-color:transparent;
+min-width:30px;
+max-width:30px;
+}
+QMainWindow#HomeWindow>QWidget#TitleBar>QPushButton#ButtonClose:hover {
+border: none;
+image: url(:/new/index/close_hover);
+background-color:transparent;
+min-width:30px;
+max-width:30px;
+}
+QMainWindow#HomeWindow>QWidget#TitleBar>QPushButton#ButtonClose:pressed {
+border: none;
+image: url(:/new/index/close_pre);
+background-color:transparent;
+min-width:30px;
+max-width:30px;
+}
+/*标题栏最小化按钮设置*/
+QMainWindow#HomeWindow>QWidget#TitleBar>QPushButton#ButtonMin {
+border: none;
+image: url(:/new/index/min_ord);
+background-color:transparent;
+min-width:30px;
+max-width:30px;
+}
+QMainWindow#HomeWindow>QWidget#TitleBar>QPushButton#ButtonMin:hover {
+border: none;
+image: url(:/new/index/min_hover);
+background-color:transparent;
+min-width:30px;
+max-width:30px;
+}
+QMainWindow#HomeWindow>QWidget#TitleBar>QPushButton#ButtonMin:pressed {
+border: none;
+image: url(:/new/index/min_pre);
+background-color:transparent;
+min-width:30px;
+max-width:30px;
+}
+/*标题栏最大化按钮设置*/
+QMainWindow#HomeWindow>QWidget#TitleBar>QPushButton#ButtonMax {
+border: none;
+image: url(:/new/index/max_ord);
+background-color:transparent;
+min-width:30px;
+max-width:30px;
+}
+QMainWindow#HomeWindow>QWidget#TitleBar>QPushButton#ButtonMax:hover {
+border: none;
+image: url(:/new/index/max_hover);
+background-color:transparent;
+min-width:30px;
+max-width:30px;
+}
+QMainWindow#HomeWindow>QWidget#TitleBar>QPushButton#ButtonMax:pressed {
+border: none;
+image: url(:/new/index/max_pre);
+background-color:transparent;
+min-width:30px;
+max-width:30px;
+}
+/*标题栏恢复按钮设置*/
+QMainWindow#HomeWindow>QWidget#TitleBar>QPushButton#ButtonRestore {
+border: none;
+image: url(:/new/index/resume_ord);
+background-color:transparent;
+min-width:30px;
+max-width:30px;
+}
+QMainWindow#HomeWindow>QWidget#TitleBar>QPushButton#ButtonRestore:hover {
+border: none;
+image: url(:/new/index/resume_hover);
+background-color:transparent;
+min-width:30px;
+max-width:30px;
+}
+QMainWindow#HomeWindow>QWidget#TitleBar>QPushButton#ButtonRestore:pressed {
+border: none;
+image: url(:/new/index/resume_pre);
+background-color:transparent;
+min-width:30px;
+max-width:30px;
+}
+
+
+/*tab页设置*/
+QTabWidget::pane{       /*主界面*/
+        border:none;
+        background:white;
+}
+QTabWidget::tab-bar{        /*tab所在位置*/
+        alignment:right;
+      /* left:500px;*/
+}
+QTabBar::tab{
+        border: 0px solid #C4C4C3;     /*边界宽度和颜色*/
+        border-top-color:#212e31;       /*上边界颜色*/
+        background:#212e31;
+        color:white;
+        font-family:"Nuosu SIL";
+        font-size:11px;
+        font-weight:bold;
+        min-height:32 px;
+        min-width:73 px;
+}
+QTabBar::tab:hover{                             /*tab鼠标悬停的颜色*/
+        background:rgb(255, 255, 255, 100);
+}
+QTabBar::tab:selected{                      /*tab选中的颜色*/
+        border-color: white;
+        background:white;
+        color:black;
+        font-family:"PT Sans Narrow";
+        font-size:12px;
+        font-weight:normal;
+        min-height:32 px;
+        min-width:73 px;
+}
+/*安全策略的tab设置*/
+QTabWidget#tabWidget::pane{       /*主界面*/
+        border:1px solid #C4C4C3;
+        background:white;
+}
+QTabWidget#tabWidget::tab-bar{        /*tab所在位置*/
+        alignment:right;
+      /* left:500px;*/
+}
+QTabWidget#tabWidget>QTabBar::tab{
+        border: 0px solid #50a495;     /*边界宽度和颜色*/
+        border-top-color:#50a495;       /*上边界颜色*/
+         border-bottom-color:white;       /*下边界颜色*/
+        background:#eeeeee;
+        color:black;
+        font-family:"Cantarell";
+        font-size:11px;
+        font-weight:bold;
+        min-height:15 px;
+        min-width:73 px;
+}
+
+QTabWidget#tabWidget>QTabBar::tab:hover{                             /*tab鼠标悬停的颜色*/
+        background:rgb(80, 164, 149, 100);   /*#eeeeee*/
+        font-weight:normal;
+        color:black;
+}
+QTabWidget#tabWidget>QTabBar::tab:selected{                      /*tab选中的颜色*/
+        border-color: gray;
+        background:#50a495;
+        color:black;
+        font-family:"PT Sans Narrow";
+        font-size:12px;
+        font-weight:normal;
+        min-height:15 px;
+        min-width:73 px;
+}
+
+
+/*QDialog*/
+QDialog
+{
+background:white;
+}
+
+/*Qtabwidget的表头*/
+/*QHeaderView::section:checked   选中的单元格所在的行列表头颜色
+{
+    background-color: red;
+}*/
+QHeaderView::section {
+    background-color: #eeeeee;
+    color: black;
+    padding-left: 0px;
+    border: 0px solid #6c6c6c;
+}
+
+
+/*QLineEdit*/
+QLineEdit
+{
+    border: 1px solid #C4C4C3;
+}
+
+
+QListWidget
+{
+    border:1px solid #C4C4C3;
+}
+
+QScrollArea
+{
+    border:none
+}

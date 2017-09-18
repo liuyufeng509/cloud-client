@@ -6,27 +6,34 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>483</width>
-    <height>294</height>
+    <width>412</width>
+    <height>291</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>登录窗口</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="resource.qrc">
+    <normaloff>:/new/index/taskbar</normaloff>:/new/index/taskbar</iconset>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(69, 139, 103);</string>
   </property>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>100</x>
+     <x>60</x>
      <y>240</y>
-     <width>271</width>
-     <height>28</height>
+     <width>291</width>
+     <height>29</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
      <widget class="QPushButton" name="quitPushButton">
       <property name="text">
-       <string>Quit</string>
+       <string>取消</string>
       </property>
      </widget>
     </item>
@@ -46,7 +53,7 @@
     <item>
      <widget class="QPushButton" name="loginPushButton">
       <property name="text">
-       <string>Login</string>
+       <string>登录</string>
       </property>
      </widget>
     </item>
@@ -55,10 +62,10 @@
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>90</x>
+     <x>60</x>
      <y>120</y>
      <width>291</width>
-     <height>94</height>
+     <height>97</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
@@ -67,21 +74,27 @@
       <item>
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Server</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#f9f2f2;&quot;&gt;服务器地址：&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>UserName</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#fdf6f6;&quot;&gt;用户名：&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>Password</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#f7f0f0;&quot;&gt;密码：&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
@@ -97,13 +110,35 @@
           <height>0</height>
          </size>
         </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(255, 255, 255);
+border: 0px solid white;</string>
+        </property>
+        <property name="text">
+         <string>10.50.200.149</string>
+        </property>
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="usernameLineEdit"/>
+       <widget class="QLineEdit" name="usernameLineEdit">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(255, 255, 255);
+border: 0px solid white;</string>
+        </property>
+        <property name="text">
+         <string>demo</string>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QLineEdit" name="passwdLineEdit">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(255, 255, 255);
+border: 0px solid white;</string>
+        </property>
+        <property name="text">
+         <string>123456</string>
+        </property>
         <property name="echoMode">
          <enum>QLineEdit::Password</enum>
         </property>
@@ -125,11 +160,14 @@
    <widget class="QLabel" name="loginLogoLabel">
     <property name="geometry">
      <rect>
-      <x>0</x>
+      <x>30</x>
       <y>10</y>
-      <width>481</width>
+      <width>381</width>
       <height>91</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">image: url(:/new/index/title);</string>
     </property>
     <property name="text">
      <string/>
@@ -157,6 +195,8 @@
   <tabstop>loginPushButton</tabstop>
   <tabstop>quitPushButton</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
  <connections/>
 </ui>

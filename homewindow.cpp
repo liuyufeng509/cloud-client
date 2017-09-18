@@ -10,11 +10,8 @@
 #include <QTimer>
 #include <QDateTime>
 #include <QDesktopWidget>
-
 #include "simple_log.h"
-
 #include "vmwidget.h"
-
 #include <QtScript/QtScript>
 #include <QMenu>
 #include <QEvent>
@@ -26,8 +23,13 @@
 #include <QTcpSocket>
 #include <QHostAddress>
 
+#include <QJsonParseError>
+#include<QJsonObject>
+#include<QJsonArray>
+#include<QJsonDocument>
+
 HomeWindow::HomeWindow(QWidget *parent) :
-    QWidget(parent),
+    QMainWindow(parent),
     ui(new Ui::HomeWindow)
 {
     ui->setupUi(this);
@@ -35,18 +37,9 @@ HomeWindow::HomeWindow(QWidget *parent) :
 
     moveToCenter();
 
-    configFile                    = NULL;
-    m_okClose                     = false;
-
-    m_button_group = new QButtonGroup;
-    connect(m_button_group, SIGNAL(buttonClicked (int)), this, SLOT(button_pressed_slot(int)) );
-
-    configFile = new ConfigureFile(QCoreApplication::applicationName(), "config.ini");
-
     //初始化语言
-    initLanguage();
 
-    LoginDialog dia;
+    LoginDialog dia(m_userInfo);
     if (QDialog::Accepted == dia.exec())
     {
         this->serverIp = dia.getServerIP();
@@ -57,7 +50,269 @@ HomeWindow::HomeWindow(QWidget *parent) :
         exit(1);
     }
 
-    refreshVM();
+    //get vms
+    getVMs();
+    getVMsIpPort();
+    getVMsInfo();
+//    for(int i=0;i<vmArray.size();i++)
+//    {
+//        qDebug()<<"***************************************";
+//        qDebug()<<"vmArray["<<i<<"].name="<<vmArray[i].name;
+//        qDebug()<<"vmArray["<<i<<"].vid="<<vmArray[i].vid;
+//        qDebug()<<"vmArray["<<i<<"].ip="<<vmArray[i].ip;
+//        qDebug()<<"vmArray["<<i<<"].port="<<vmArray[i].port;
+//        qDebug()<<"vmArray["<<i<<"].status="<<vmArray[i].status;
+//        qDebug()<<"vmArray["<<i<<"].created="<<vmArray[i].created;
+//        for(int j=0;j<vmArray[i].addrs.size();j++)
+//        {
+//            qDebug()<<"vmArray["<<i<<"].addr["<<j<<"].ip="<<vmArray[i].addrs[j].ip;
+//            qDebug()<<"vmArray["<<i<<"].addr["<<j<<"].mac="<<vmArray[i].addrs[j].mac;
+//            qDebug()<<"vmArray["<<i<<"].addr["<<j<<"].type="<<vmArray[i].addrs[j].type;
+//        }
+//    }
+
+    //initUI
+    initTitleBar();
+    setWindowIcon(QIcon(":/new/index/taskbar"));
+    this->setWindowFlags(Qt::FramelessWindowHint);
+    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);    // 设置尺寸属性
+    setMouseTracking(true);    // 界面拉伸需要这个属性
+
+    updateUI();
+}
+
+void HomeWindow::updateUI()
+{
+    for(int i=0; i<vmArray.size(); i++)
+   {
+       VMWidget *vm = new VMWidget(vmArray[i],this);
+
+       ui->vmsGridLayout->addWidget(vm, i/4, i%4);
+       connect(vm, &VMWidget::emitData, this, &HomeWindow::openVm);
+   }
+}
+
+void HomeWindow::openVm(VM_CONFIG vm)
+{
+    if(vm.status!=RUNING)
+    {
+        QMessageBox::information(this, "提示","该虚拟主机不在线");
+        return;
+    }
+    QString cmd = QString("%1 spice://%2:%3 --full-screen  &").arg("/usr/bin/remote-viewer").arg(vm.ip).arg(vm.port);
+    GetCmdRes(cmd);
+}
+
+void HomeWindow::initTitleBar()
+{
+    m_titleBar = new MyTitleBar(this);
+    m_titleBar->move(0, 0);
+    m_titleBar->setTitleIcon(":/new/index/mainwintitle",QSize(145, 30));
+    m_titleBar->setTitleContent(tr("方德云客户端"), 11);
+    m_titleBar->setBackgroundColor(69, 139, 103);
+    m_titleBar->setButtonType(MIN_MAX_BUTTON);
+    connect(m_titleBar, SIGNAL(signalButtonMinClicked()), this, SLOT(onButtonMinClicked()));
+    connect(m_titleBar, SIGNAL(signalButtonRestoreClicked()), this, SLOT(onButtonRestoreClicked()));
+    connect(m_titleBar, SIGNAL(signalButtonMaxClicked()), this, SLOT(onButtonMaxClicked()));
+    connect(m_titleBar, SIGNAL(signalButtonCloseClicked()), this, SLOT(onButtonCloseClicked()));
+
+}
+
+void HomeWindow::onButtonMinClicked()
+{
+    showMinimized();
+}
+
+void HomeWindow::onButtonRestoreClicked()
+{
+    QPoint windowPos;
+    QSize windowSize;
+    m_titleBar->getRestoreInfo(windowPos, windowSize);
+    this->setGeometry(QRect(windowPos, windowSize));
+}
+
+void HomeWindow::onButtonMaxClicked()
+{
+    m_titleBar->saveRestoreInfo(this->pos(), QSize(this->width(), this->height()));
+    QRect desktopRect = QApplication::desktop()->availableGeometry();
+    QRect FactRect = QRect(desktopRect.x() - 3, desktopRect.y() - 3, desktopRect.width() + 6, desktopRect.height() + 6);
+    setGeometry(FactRect);
+}
+
+void HomeWindow::onButtonCloseClicked()
+{
+    close();
+}
+
+
+bool HomeWindow::getVMsIpPort()
+{
+    QString cmd = "telnet "+serverIp + " "+QString::number(59000) +" 2>&1";
+    QString res = GetCmdRes(cmd).trimmed();
+    QStringList list = res.split('\n');
+    if(list.size()<5)
+    {
+        qDebug()<<tr("telnet: info nums less than 5");
+        return false;
+    }
+    for(int i=0; i<list.size();i++)
+    {
+        if(list[i].contains("\"instances\"")&&parseVMsIpPort(list[i]))
+            return true;
+    }
+    return false;
+}
+
+bool HomeWindow::parseVMsIpPort(QString output)
+{
+    QScriptEngine engine;
+    QScriptValue sc = engine.evaluate("value=" + output);
+
+    if( sc.isArray())
+    {
+        QScriptValueIterator it(sc);
+        while(it.hasNext())
+        {
+            it.next();
+
+            QScriptValueIterator i(it.value().property("instances"));
+            while(i.hasNext())
+            {
+                i.next();
+                QString uuid = i.value().property("uuid").toString();
+                for(int j=0; j<vmArray.size();j++)
+                {
+                    if(vmArray[j].vid == uuid)
+                    {
+                        vmArray[j].ip = i.value().property("hostip").toString();
+                        vmArray[j].port = i.value().property("spiceport").toInt32();
+                        if(vmArray[j].port == -1)
+                        {
+                            vmArray[j].status = SHUTDOWN;
+                        }else
+                            vmArray[j].status = RUNING;
+                        break;
+                    }
+                }
+
+            }
+        }
+    }
+}
+
+bool HomeWindow::parseVMsInfo(QByteArray &ba)
+{
+    QJsonParseError jsonpe;
+    QJsonDocument json = QJsonDocument::fromJson(ba, &jsonpe);
+    if(jsonpe.error == QJsonParseError::NoError)
+    {
+        if(json.isArray())
+        {
+            QJsonArray vmsobjs = json.array();
+            for(int i=0; i<vmsobjs.size(); i++)
+            {
+                QJsonObject obj = vmsobjs[i].toObject();
+                QString id = obj["id"].toString();
+                for(int j=0; j<vmArray.size();j++)
+                {
+                    if(id == vmArray[j].vid)
+                    {
+                        QJsonObject obj1 = obj["addresses"].toObject();
+                        QJsonArray array = obj1["demo"].toArray();
+                        for(int k=0; k<array.size();k++)
+                        {
+                            Addr addr;
+                            addr.mac = (array[k].toObject())["OS-EXT-IPS-MAC:mac_addr"].toString();
+                            addr.ip = (array[k].toObject())["addr"].toString();
+                            addr.type = (array[k].toObject())["OS-EXT-IPS:type"].toString();
+                            vmArray[j].addrs.append(addr);
+                        }
+                        vmArray[j].created =obj["created"].toString();
+                        break;
+                    }
+                }
+
+            }
+        }
+        return true;
+    }else
+        return false;
+}
+
+bool HomeWindow::getVMsInfo()
+{
+    QString cmd = "/root/getVMsInfo.py "+m_userInfo.uname+" "+m_userInfo.pwd+" "+serverIp + " " +vms+" 2>&1";
+    QString res = GetCmdRes(cmd).trimmed();
+    QStringList list = res.split('\n');
+    if(list.size()<1)
+    {
+        qDebug()<<tr("Login failed: printed info nums less than 2");
+        return false;
+    }
+    if(list.contains("login failed"))
+    {
+        QMessageBox::information(this, "警告", "获取虚拟机详细信息失败，请点击刷新，重新获取");
+        return false;
+    }else if(list.contains("login success"))
+    {
+        QByteArray cstr = list.last().toLatin1();
+        if(!parseVMsInfo(cstr))
+            QMessageBox::information(this, "警告", "解析虚拟机详细信息失败，请点击刷新，重新获取");
+        return true;
+    }
+    return true;
+
+}
+
+bool HomeWindow::getVMs()
+{
+    QString cmd = "/root/getVMs.py "+m_userInfo.uname+" "+m_userInfo.pwd+" "+serverIp + " 2>&1";
+    QString res = GetCmdRes(cmd).trimmed();
+    QStringList list = res.split('\n');
+    if(list.size()<1)
+    {
+        qDebug()<<tr("Login failed: printed info nums less than 2");
+        return false;
+    }
+    if(list.contains("login failed"))
+    {
+        QMessageBox::information(this, "警告", "获取虚拟机列表信息失败，请点击刷新，重新获取");
+        return false;
+    }else if(list.contains("login success"))
+    {
+        QByteArray cstr = list.last().toLatin1();
+        if(!parseVMs(cstr))
+            QMessageBox::information(this, "警告", "解析虚拟机列表信息失败，请点击刷新，重新获取");
+        vms = '\''+list.last()+'\'';
+
+        return true;
+    }
+    return true;
+}
+
+bool HomeWindow::parseVMs(QByteArray &ba)
+{
+    vmArray.clear();
+    QJsonParseError jsonpe;
+    QJsonDocument json = QJsonDocument::fromJson(ba, &jsonpe);
+
+    if(jsonpe.error == QJsonParseError::NoError)
+    {
+        if(json.isArray())
+        {
+            QJsonArray vmsobjs = json.array();
+            for(int i=0; i<vmsobjs.size(); i++)
+            {
+                QJsonObject obj = vmsobjs[i].toObject();
+                VM_CONFIG vm;
+                vm.name = obj["name"].toString();
+                vm.vid = obj["uuid"].toString();
+                vmArray.append(vm);
+            }
+        }
+        return true;
+    }else
+        return false;
 }
 
 void HomeWindow::moveToCenter()
@@ -66,71 +321,14 @@ void HomeWindow::moveToCenter()
     move((desktop->width() - this->width())/2, (desktop->height() - this->height())/2);
 }
 
-//设置样式表
-void HomeWindow::setAppStyleSheet(const QString lang)
-{
-    QString styleFilePath;
-    if(lang == "chinese")
-    {
-       styleFilePath = ":/style/style.css";
-    }
-    else if (lang == "english")
-    {
-        styleFilePath = ":/style/style_english.css";
-    }
 
-    QFile qss(styleFilePath);
-    qss.open(QFile::ReadOnly);
-    QString stylesheet = qss.readAll();
-    qApp->setStyleSheet(stylesheet);
-}
-
-void HomeWindow::initLanguage()
-{
-    QString lang = configFile->LoadConfigure("translation/lang");
-    m_translator = new QTranslator;
-
-    if(lang != "english" && lang != "chinese")
-    {
-        lang = "chinese";
-        configFile->SaveConfigure("translation/lang", lang);
-    }
-
-    lang_changed_slot(lang);
-    m_curLang = lang;
-}
 
 HomeWindow::~HomeWindow()
 {
     delete ui;
-
-    delete configFile;
-
-    delete m_button_group;
-
-    delete m_translator;
 }
 
-void HomeWindow::changeEvent(QEvent *e)
-{
-   switch (e->type()) {
-    case QEvent::LanguageChange:
-        ui->retranslateUi(this);//这里实现语言翻译器的更新。
-       break;
-    default:
-       break;
-    }
-}
 
-void HomeWindow::closeEvent(QCloseEvent * event){
-    if(m_okClose){  //Filter Alt+F4
-        event->accept();
-        QWidget::closeEvent(event);
-    }else{
-        event->ignore();
-        return;
-    }
-}
 
 //添加快捷键
 void HomeWindow::keyPressEvent(QKeyEvent *e)
@@ -165,177 +363,33 @@ void HomeWindow::keyPressEvent(QKeyEvent *e)
     }
 }
 
-/*鼠标按下事件*/
-void HomeWindow::mousePressEvent(QMouseEvent *event)
-{
-    if (event->button() == Qt::LeftButton) {
-        m_Drag = true;
-        m_DragPosition = event->globalPos() - this->pos();
-        event->accept();
-    }
-}
 
-/*鼠标移动事件*/
-void HomeWindow::mouseMoveEvent(QMouseEvent *event)
-{
-    if (m_Drag && (event->buttons() && Qt::LeftButton)) {
-        move(event->globalPos() - m_DragPosition);
-        event->accept();
-    }
-}
-
-/*鼠标释放事件*/
-void HomeWindow::mouseReleaseEvent(QMouseEvent *event)
-{
-    Q_UNUSED(event);
-
-    m_Drag = false;
-}
 
 /*启动VDI客户端*/
-void HomeWindow::button_pressed_slot(int index)
-{
-    QString lang;
+//void HomeWindow::button_pressed_slot(int index)
+//{
+//    QString lang;
 
-    if (m_curLang == "english")
-    {
-        lang = "en_US.UTF-8";
-    }
-    else
-    {
-        lang = "zh_CN.UTF-8";
-    }
+//    if (m_curLang == "english")
+//    {
+//        lang = "en_US.UTF-8";
+//    }
+//    else
+//    {
+//        lang = "zh_CN.UTF-8";
+//    }
 
-    VM_CONFIG vm = vmArray[index];
+//    VM_CONFIG vm = vmArray[index];
 
-    QStringList globalArgs = qApp->arguments();
-    qDebug() << globalArgs;
+//    QStringList globalArgs = qApp->arguments();
+//    qDebug() << globalArgs;
 
-    QString cmd = QString("%1 spice://%2:%3 --full-screen").arg(globalArgs[1]).arg(vm.ip).arg(vm.port);
+//    QString cmd = QString("%1 spice://%2:%3 --full-screen").arg(/*globalArgs[1]*/"/usr/bin/remote-viewer").arg(vm.ip).arg(vm.port);
 
-    LOG(DEBUG_LEVEL, cmd.toStdString().c_str());
+//    LOG(DEBUG_LEVEL, cmd.toStdString().c_str());
 
-    system(cmd.toStdString().c_str());
+//    system(cmd.toStdString().c_str());
 
-    return;
-}
+//    return;
+//}
 
-//切换语言
-void HomeWindow::lang_changed_slot(QString lang)
-{
-    if(lang == "chinese")
-    {
-        m_translator->load(":/lang/lang_zh_CN.qm");
-        configFile->SaveConfigure("translation/lang","chinese");
-        setenv("LANG", "zh_CN.UTF8", 1);
-    }
-    else if (lang == "english")
-    {
-        m_translator->load(":/lang/lang_en_US.qm");
-        configFile->SaveConfigure("translation/lang","english");
-        setenv("LANG", "en_US.UTF8", 1);
-    }
-
-    qApp->installTranslator(m_translator);
-    this->setAppStyleSheet(lang);
-
-    m_curLang = lang;
-}
-
-void HomeWindow::on_closePtn_clicked()
-{
-    this->close();
-    exit(0);
-}
-
-void HomeWindow::refreshVM()
-{
-    QTcpSocket *socket = new QTcpSocket(this);
-    socket->connectToHost(QHostAddress(this->serverIp), 59000);
-    connect(socket, SIGNAL(readyRead()), this, SLOT(on_parseInstances()));
-}
-
-void HomeWindow::on_parseInstances()
-{
-    this->vmArray.clear();
-    QTcpSocket *socket = static_cast<QTcpSocket*>(sender());
-    QString output = socket->readAll();
-
-    QScriptEngine engine;
-    QScriptValue sc = engine.evaluate("value=" + output);
-
-    if( sc.isArray())
-    {
-        QScriptValueIterator it(sc);
-        while(it.hasNext())
-        {
-            it.next();
-
-            QScriptValueIterator i(it.value().property("instances"));
-            while(i.hasNext())
-            {
-                i.next();
-                VM_CONFIG vm;
-                vm.name = i.value().property("name").toString();
-                vm.ip = i.value().property("hostip").toString();
-                vm.port = i.value().property("spiceport").toInt32();
-                if(!vm.ip.isEmpty())
-                {
-                    qDebug() << vm.name << vm.ip << endl;
-                    vmArray.append(vm);
-                }
-            }
-        }
-    }
-
-    int vm_count = vmArray.length();
-    int already_count = ui->gridLayout->count();
-    if(vm_count < already_count)
-    {
-        for(int i=vm_count; i<already_count; i++)
-        {
-            QAbstractButton *b = m_button_group->button(i);
-            m_button_group->removeButton(b);
-            ui->gridLayout->removeItem(ui->gridLayout->itemAt(i));
-        }
-    }
-    else
-    {
-        for(int i=already_count; i<vm_count; i++)
-        {
-            VMWidget *vm = new VMWidget(this);
-
-            ui->gridLayout->addWidget(vm, i/4, i%4);
-            QPushButton *b = vm->GetButton();
-
-            m_button_group->addButton(b, i);
-            b->setFocusPolicy(Qt::NoFocus);
-        }
-    }
-
-    for(int i=0; i<ui->gridLayout->count(); i++)
-    {
-        VMWidget *vm = qobject_cast<VMWidget*>(ui->gridLayout->itemAt(i)->widget());
-        vm->GetLabel()->setText(vmArray[i].name);
-    }
-}
-
-void HomeWindow::on_minPtn_clicked()
-{
-    this->setWindowState(Qt::WindowMinimized);
-}
-
-
-void HomeWindow::on_maxPtn_clicked()
-{
-    if(this->windowState() == Qt::WindowNoState)
-    {
-        this->setWindowState(Qt::WindowMaximized);
-        ui->maxPtn->setIcon(QIcon(":/image/maximum.png"));
-    }
-    else if(this->windowState() == Qt::WindowMaximized)
-    {
-        this->setWindowState(Qt::WindowNoState);
-        ui->maxPtn->setIcon(QIcon(":/image/maximum.png"));
-    }
-}

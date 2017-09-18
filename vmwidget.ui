@@ -76,6 +76,10 @@
          <height>186</height>
         </size>
        </property>
+       <property name="styleSheet">
+        <string notr="true">
+</string>
+       </property>
        <property name="text">
         <string/>
        </property>

@@ -24,21 +24,27 @@ TRANSLATIONS += lang/lang_zh_CN.ts\
 #source
 SOURCES += main.cpp\
     homewindow.cpp \
-    configurefile.cpp \
     vmwidget.cpp \
-    logindialog.cpp
+    logindialog.cpp \
+    common.cpp \
+    mytitlebar.cpp \
+    waitdialog.cpp \
+    worker.cpp
 
 HEADERS  += \
     homewindow.h \
-    configurefile.h \
     simple_log.h \
     vmwidget.h \
-    logindialog.h
+    logindialog.h \
+    common.h \
+    mytitlebar.h \
+    waitdialog.h \
+    worker.h
 
 FORMS    += \
-    homewindow.ui \
     vmwidget.ui \
-    logindialog.ui
+    logindialog.ui \
+    homewindow.ui
 
 RESOURCES += \
     resource.qrc
