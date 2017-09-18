@@ -29,7 +29,8 @@ SOURCES += main.cpp\
     common.cpp \
     mytitlebar.cpp \
     waitdialog.cpp \
-    worker.cpp
+    worker.cpp \
+    detaildialog.cpp
 
 HEADERS  += \
     homewindow.h \
@@ -39,12 +40,14 @@ HEADERS  += \
     common.h \
     mytitlebar.h \
     waitdialog.h \
-    worker.h
+    worker.h \
+    detaildialog.h
 
 FORMS    += \
     vmwidget.ui \
     logindialog.ui \
-    homewindow.ui
+    homewindow.ui \
+    detaildialog.ui
 
 RESOURCES += \
     resource.qrc

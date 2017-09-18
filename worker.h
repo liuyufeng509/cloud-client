@@ -16,19 +16,37 @@ public:
 //       }
 //       return m_pInstance;
 //   }
-    void setSvrIP(QString ip){serverIP = ip;}
+    void setSvrIP(QString ip){serverIp = ip;}
+    void setUserInfo(UserInfo usr){m_userInfo=usr;}
 
+    bool operateVMs(QString vid, STAT &status);
 private:
     bool Login(UserInfo  &userInfo);
 
+    bool getVMs(QVector<VM_CONFIG> &vmArr, QString &vms);
+    bool parseVMs(QVector<VM_CONFIG> &vmArr,QByteArray &ba);
+
+    bool getVMsIpPort(QVector<VM_CONFIG> &vmArr);
+    bool parseVMsIpPort(QVector<VM_CONFIG> &vmArr,QString output);
+
+    bool getVMsInfo(QVector<VM_CONFIG> &vmArr,QString &vms);
+    bool parseVMsInfo(QVector<VM_CONFIG> &vmArr,QByteArray &ba);
+
+
+
 signals:
     void loginReady(bool success);
+    void getAllInfoReady(bool success);
 public slots:
     void doLogin(UserInfo &userinfo);
+    void doGetAllInfo(QVector<VM_CONFIG> *vmArr, QString &vms);
 private:
 
     //static Worker *m_pInstance;
-    QString serverIP;
+    QString serverIp;
+
+
+    UserInfo m_userInfo;
 };
 
 #endif // WORKER_H

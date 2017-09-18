@@ -44,16 +44,31 @@ HomeWindow::HomeWindow(QWidget *parent) :
     {
         this->serverIp = dia.getServerIP();
         qDebug() << this->serverIp << endl;
+        ui->label->setText("<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; color:#458b67;\">你好，"+m_userInfo.uname+"，欢迎使用方德云客户端！</span></p></body></html>");
     }
     else
     {
         exit(1);
     }
 
+    //thread
+    worker = new Worker;
+    worker->moveToThread(&workerThread);
+    qRegisterMetaType<VMVECTOR> ("QVector<VM_CONFIG> *");
+    qRegisterMetaType<QString> ("QString &");
+    connect(&workerThread, &QThread::finished, worker, &QObject::deleteLater);
+    connect(this, &HomeWindow::getAllInfo, worker, &Worker::doGetAllInfo);
+    connect(worker, &Worker::getAllInfoReady, this, &HomeWindow::handleGetAllInfoRes);
+    workerThread.start();
+
     //get vms
-    getVMs();
-    getVMsIpPort();
-    getVMsInfo();
+    worker->setSvrIP(serverIp);
+    worker->setUserInfo(m_userInfo);
+    emit getAllInfo(&vmArray,vms);
+    waitDiaogAppear();
+//    getVMs();
+//    getVMsIpPort();
+//    getVMsInfo();
 //    for(int i=0;i<vmArray.size();i++)
 //    {
 //        qDebug()<<"***************************************";
@@ -78,15 +93,45 @@ HomeWindow::HomeWindow(QWidget *parent) :
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);    // 设置尺寸属性
     setMouseTracking(true);    // 界面拉伸需要这个属性
 
+   // updateUI();
+}
+
+void HomeWindow::handleGetAllInfoRes(bool success)
+{
+    waitDialogAccept();
+    if(!success)
+    {
+        QMessageBox::warning(this, "警告", "获取虚拟机信息失败，请尝试刷新");
+    }
     updateUI();
+}
+
+void HomeWindow::clearLayout(QLayout *layout)
+{
+    QLayoutItem *item;
+    while((item = layout->takeAt(0)) != 0){
+        //删除widget
+        if(item->widget()){
+            delete item->widget();
+            //item->widget()->deleteLater();
+        }
+        //删除子布局
+        QLayout *childLayout = item->layout();
+        if(childLayout){
+            clearLayout(childLayout);
+        }
+        delete item;
+    }
 }
 
 void HomeWindow::updateUI()
 {
+    clearLayout(ui->vmsGridLayout);
     for(int i=0; i<vmArray.size(); i++)
    {
        VMWidget *vm = new VMWidget(vmArray[i],this);
-
+        vm->setSvrIP(serverIp);
+        vm->setUserInfo(m_userInfo);
        ui->vmsGridLayout->addWidget(vm, i/4, i%4);
        connect(vm, &VMWidget::emitData, this, &HomeWindow::openVm);
    }
@@ -144,177 +189,6 @@ void HomeWindow::onButtonCloseClicked()
     close();
 }
 
-
-bool HomeWindow::getVMsIpPort()
-{
-    QString cmd = "telnet "+serverIp + " "+QString::number(59000) +" 2>&1";
-    QString res = GetCmdRes(cmd).trimmed();
-    QStringList list = res.split('\n');
-    if(list.size()<5)
-    {
-        qDebug()<<tr("telnet: info nums less than 5");
-        return false;
-    }
-    for(int i=0; i<list.size();i++)
-    {
-        if(list[i].contains("\"instances\"")&&parseVMsIpPort(list[i]))
-            return true;
-    }
-    return false;
-}
-
-bool HomeWindow::parseVMsIpPort(QString output)
-{
-    QScriptEngine engine;
-    QScriptValue sc = engine.evaluate("value=" + output);
-
-    if( sc.isArray())
-    {
-        QScriptValueIterator it(sc);
-        while(it.hasNext())
-        {
-            it.next();
-
-            QScriptValueIterator i(it.value().property("instances"));
-            while(i.hasNext())
-            {
-                i.next();
-                QString uuid = i.value().property("uuid").toString();
-                for(int j=0; j<vmArray.size();j++)
-                {
-                    if(vmArray[j].vid == uuid)
-                    {
-                        vmArray[j].ip = i.value().property("hostip").toString();
-                        vmArray[j].port = i.value().property("spiceport").toInt32();
-                        if(vmArray[j].port == -1)
-                        {
-                            vmArray[j].status = SHUTDOWN;
-                        }else
-                            vmArray[j].status = RUNING;
-                        break;
-                    }
-                }
-
-            }
-        }
-    }
-}
-
-bool HomeWindow::parseVMsInfo(QByteArray &ba)
-{
-    QJsonParseError jsonpe;
-    QJsonDocument json = QJsonDocument::fromJson(ba, &jsonpe);
-    if(jsonpe.error == QJsonParseError::NoError)
-    {
-        if(json.isArray())
-        {
-            QJsonArray vmsobjs = json.array();
-            for(int i=0; i<vmsobjs.size(); i++)
-            {
-                QJsonObject obj = vmsobjs[i].toObject();
-                QString id = obj["id"].toString();
-                for(int j=0; j<vmArray.size();j++)
-                {
-                    if(id == vmArray[j].vid)
-                    {
-                        QJsonObject obj1 = obj["addresses"].toObject();
-                        QJsonArray array = obj1["demo"].toArray();
-                        for(int k=0; k<array.size();k++)
-                        {
-                            Addr addr;
-                            addr.mac = (array[k].toObject())["OS-EXT-IPS-MAC:mac_addr"].toString();
-                            addr.ip = (array[k].toObject())["addr"].toString();
-                            addr.type = (array[k].toObject())["OS-EXT-IPS:type"].toString();
-                            vmArray[j].addrs.append(addr);
-                        }
-                        vmArray[j].created =obj["created"].toString();
-                        break;
-                    }
-                }
-
-            }
-        }
-        return true;
-    }else
-        return false;
-}
-
-bool HomeWindow::getVMsInfo()
-{
-    QString cmd = "/root/getVMsInfo.py "+m_userInfo.uname+" "+m_userInfo.pwd+" "+serverIp + " " +vms+" 2>&1";
-    QString res = GetCmdRes(cmd).trimmed();
-    QStringList list = res.split('\n');
-    if(list.size()<1)
-    {
-        qDebug()<<tr("Login failed: printed info nums less than 2");
-        return false;
-    }
-    if(list.contains("login failed"))
-    {
-        QMessageBox::information(this, "警告", "获取虚拟机详细信息失败，请点击刷新，重新获取");
-        return false;
-    }else if(list.contains("login success"))
-    {
-        QByteArray cstr = list.last().toLatin1();
-        if(!parseVMsInfo(cstr))
-            QMessageBox::information(this, "警告", "解析虚拟机详细信息失败，请点击刷新，重新获取");
-        return true;
-    }
-    return true;
-
-}
-
-bool HomeWindow::getVMs()
-{
-    QString cmd = "/root/getVMs.py "+m_userInfo.uname+" "+m_userInfo.pwd+" "+serverIp + " 2>&1";
-    QString res = GetCmdRes(cmd).trimmed();
-    QStringList list = res.split('\n');
-    if(list.size()<1)
-    {
-        qDebug()<<tr("Login failed: printed info nums less than 2");
-        return false;
-    }
-    if(list.contains("login failed"))
-    {
-        QMessageBox::information(this, "警告", "获取虚拟机列表信息失败，请点击刷新，重新获取");
-        return false;
-    }else if(list.contains("login success"))
-    {
-        QByteArray cstr = list.last().toLatin1();
-        if(!parseVMs(cstr))
-            QMessageBox::information(this, "警告", "解析虚拟机列表信息失败，请点击刷新，重新获取");
-        vms = '\''+list.last()+'\'';
-
-        return true;
-    }
-    return true;
-}
-
-bool HomeWindow::parseVMs(QByteArray &ba)
-{
-    vmArray.clear();
-    QJsonParseError jsonpe;
-    QJsonDocument json = QJsonDocument::fromJson(ba, &jsonpe);
-
-    if(jsonpe.error == QJsonParseError::NoError)
-    {
-        if(json.isArray())
-        {
-            QJsonArray vmsobjs = json.array();
-            for(int i=0; i<vmsobjs.size(); i++)
-            {
-                QJsonObject obj = vmsobjs[i].toObject();
-                VM_CONFIG vm;
-                vm.name = obj["name"].toString();
-                vm.vid = obj["uuid"].toString();
-                vmArray.append(vm);
-            }
-        }
-        return true;
-    }else
-        return false;
-}
-
 void HomeWindow::moveToCenter()
 {
     QDesktopWidget* desktop = QApplication::desktop();
@@ -326,6 +200,8 @@ void HomeWindow::moveToCenter()
 HomeWindow::~HomeWindow()
 {
     delete ui;
+    workerThread.quit();
+    workerThread.wait();
 }
 
 
@@ -363,33 +239,30 @@ void HomeWindow::keyPressEvent(QKeyEvent *e)
     }
 }
 
+void HomeWindow::waitDialogAccept()
+{
+    waitD->accept();
+    delete waitD;
+}
+
+void HomeWindow::waitDiaogAppear()
+{
+    waitD = new WaitDialog(this);
+    waitD->exec();
+  //  waitD->deleteLater();
+}
 
 
-/*启动VDI客户端*/
-//void HomeWindow::button_pressed_slot(int index)
-//{
-//    QString lang;
 
-//    if (m_curLang == "english")
-//    {
-//        lang = "en_US.UTF-8";
-//    }
-//    else
-//    {
-//        lang = "zh_CN.UTF-8";
-//    }
 
-//    VM_CONFIG vm = vmArray[index];
+void HomeWindow::on_freshButton_clicked()
+{
+    emit getAllInfo(&vmArray,vms);
+    waitDiaogAppear();
+//    clearLayout(ui->vmsGridLayout);
+}
 
-//    QStringList globalArgs = qApp->arguments();
-//    qDebug() << globalArgs;
-
-//    QString cmd = QString("%1 spice://%2:%3 --full-screen").arg(/*globalArgs[1]*/"/usr/bin/remote-viewer").arg(vm.ip).arg(vm.port);
-
-//    LOG(DEBUG_LEVEL, cmd.toStdString().c_str());
-
-//    system(cmd.toStdString().c_str());
-
-//    return;
-//}
-
+void HomeWindow::on_logoutButton_clicked()
+{
+    exit(0);
+}

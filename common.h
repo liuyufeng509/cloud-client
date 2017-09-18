@@ -4,6 +4,8 @@
 #include<QVector>
 #include<QStringList>
 #include <QtDebug>
+#include<QMessageBox>
+
 struct  UserInfo
 {
     QString uname;
@@ -33,6 +35,7 @@ struct VM_CONFIG{
     QVector<Addr> addrs;
 };
 
+typedef QVector<VM_CONFIG>   VMVECTOR;//TE策略列表类型
 
 QString GetCmdRes(QString cmd);
 
