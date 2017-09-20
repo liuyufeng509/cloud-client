@@ -19,7 +19,7 @@ public:
     void setSvrIP(QString ip){serverIp = ip;}
     void setUserInfo(UserInfo usr){m_userInfo=usr;}
 
-    bool operateVMs(QString vid, STAT &status);
+    bool operateVMs(QString vid, STAT *status);
     bool getVMsIpPort(QVector<VM_CONFIG> &vmArr);
 
     bool needUpdate();

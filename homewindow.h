@@ -73,7 +73,6 @@ protected:
     MyTitleBar* m_titleBar;
 private:
 
-    QVector<VM_CONFIG> vmArray;
     QString serverIp;
     UserInfo m_userInfo;
     QString vms;
@@ -87,6 +86,8 @@ private:
     QMenu *m_menu;
     QAction *operAction;
     QAction *detailAction;
+public:
+    QVector<VM_CONFIG> vmArray;
 
 };
 

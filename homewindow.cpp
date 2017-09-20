@@ -22,6 +22,7 @@
 #include <qdebug.h>
 #include <QTcpSocket>
 #include <QHostAddress>
+#include<unistd.h>
 
 #include <QJsonParseError>
 #include<QJsonObject>
@@ -111,12 +112,14 @@ void HomeWindow::operateActionSlot()
     }
 
 
-    if(worker->operateVMs(vmArray[row].vid,vmArray[row].status))
+    if(worker->operateVMs(vmArray[row].vid,&vmArray[row].status))
     {
+        sleep(3);
         worker->getVMsIpPort(vmArray);
-        QMessageBox::information(NULL, "提示","开关机操作成功");
         updatetableUI();
         updateViewUI();
+
+        QMessageBox::information(NULL, "提示","开关机操作成功");
     }
 }
 

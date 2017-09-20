@@ -42,6 +42,8 @@ private:
     QAction *operAction;
     QAction *detailAction;
     Worker *worker;
+
+    QWidget *prt;
 };
 
 #endif // VMWIDGET_H

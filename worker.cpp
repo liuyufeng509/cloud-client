@@ -144,7 +144,9 @@ bool Worker::parseVMsIpPort(QVector<VM_CONFIG> &vmArray,QString output)
 
             }
         }
-    }
+        return true;
+    }else
+        return false;
 }
 
 bool Worker::getVMsInfo(QVector<VM_CONFIG> &vmArr,QString &vms)
@@ -225,9 +227,9 @@ void Worker::doGetAllInfo(QVector<VM_CONFIG> *vmArr, QString &vms)
 //    emit getAllInfoReady(true);
 }
 
-bool Worker::operateVMs(QString vid, STAT &status)
+bool Worker::operateVMs(QString vid, STAT *status)
 {
-    QString operate = status==RUNING?"shutdown":"startup";
+    QString operate = *status==RUNING?"shutdown":"startup";
     QString cmd = "/usr/bin/vmOperate.py "+m_userInfo.uname+" "+m_userInfo.pwd+" "+serverIp + " " +vid+" "+operate+" 2>&1";
     QString res = GetCmdRes(cmd).trimmed();
     QStringList list = res.split('\n');
@@ -247,7 +249,7 @@ bool Worker::operateVMs(QString vid, STAT &status)
             QMessageBox::information(NULL, tr("警告"), QString("开关机操作失败：")+list.last().toLatin1());
             return false;
         }
-        status = status ==RUNING? SHUTDOWN:RUNING;
+        *status = *status ==RUNING? SHUTDOWN:RUNING;
         return true;
     }
     return true;

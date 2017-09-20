@@ -1,10 +1,12 @@
 #include "vmwidget.h"
 #include "ui_vmwidget.h"
 #include "detaildialog.h"
-
+#include "homewindow.h"
+#include<unistd.h>
 VMWidget::VMWidget(VM_CONFIG &vm,QWidget *parent) :
     QWidget(parent),
     m_vm(vm),
+    prt(parent),
     ui(new Ui::VMWidget)
 {
     ui->setupUi(this);
@@ -37,9 +39,13 @@ VMWidget::VMWidget(VM_CONFIG &vm,QWidget *parent) :
 void VMWidget::operateActionSlot()
 {
     //startup or shutdown
-    if(worker->operateVMs(m_vm.vid,m_vm.status))
+    if(worker->operateVMs(m_vm.vid,&m_vm.status))
         QMessageBox::information(NULL, "提示","开关机操作成功");
     setStyleSheetByStatus();
+    HomeWindow *hw = static_cast<HomeWindow *>(prt);
+    sleep(2);
+    worker->getVMsIpPort(hw->vmArray);
+    hw->updatetableUI();
 }
 
 void VMWidget::detailActionSlot()
@@ -51,6 +57,11 @@ void VMWidget::detailActionSlot()
 
 void VMWidget::showMenu(const QPoint &point)
 {
+    if(m_vm.status == RUNING)
+    {
+        operAction->setText(tr("关机"));
+    }else
+        operAction->setText(tr("开机"));
     m_menu->exec(mapToGlobal(point));
 }
 
