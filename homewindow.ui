@@ -84,6 +84,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="updateButton">
+         <property name="text">
+          <string>升级检测</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="logoutButton">
          <property name="text">
           <string>退出</string>
@@ -214,7 +221,46 @@
        <attribute name="title">
         <string>☷列表</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_2"/>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="0" column="0">
+         <widget class="QTableWidget" name="tableWidget">
+          <column>
+           <property name="text">
+            <string>名称</string>
+           </property>
+           <property name="icon">
+            <iconset resource="resource.qrc">
+             <normaloff>:/new/index/run_namal</normaloff>:/new/index/run_namal</iconset>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>VID</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>在线状态</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>对外IP</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>对外端口</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>创建时间</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>

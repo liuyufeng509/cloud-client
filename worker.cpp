@@ -19,7 +19,7 @@ void Worker::doLogin(UserInfo &userinfo)
 
 bool Worker::Login(UserInfo  &userInfo)
 {
-    QString cmd = "/root/getLoginStatus.py "+userInfo.uname+" "+userInfo.pwd+" "+serverIp + " 2>&1";
+    QString cmd = "/usr/bin/getLoginStatus.py "+userInfo.uname+" "+userInfo.pwd+" "+serverIp + " 2>&1";
     QString res = GetCmdRes(cmd).trimmed();
     QStringList list = res.split('\n');
     if(list.size()<1)
@@ -42,7 +42,7 @@ bool Worker::Login(UserInfo  &userInfo)
 //get vms
 bool Worker::getVMs(QVector<VM_CONFIG> &vmArr,QString &vms)
 {
-    QString cmd = "/root/getVMs.py "+m_userInfo.uname+" "+m_userInfo.pwd+" "+serverIp + " 2>&1";
+    QString cmd = "/usr/bin/getVMs.py "+m_userInfo.uname+" "+m_userInfo.pwd+" "+serverIp + " 2>&1";
     QString res = GetCmdRes(cmd).trimmed();
     QStringList list = res.split('\n');
     if(list.size()<1)
@@ -149,7 +149,7 @@ bool Worker::parseVMsIpPort(QVector<VM_CONFIG> &vmArray,QString output)
 
 bool Worker::getVMsInfo(QVector<VM_CONFIG> &vmArr,QString &vms)
 {
-    QString cmd = "/root/getVMsInfo.py "+m_userInfo.uname+" "+m_userInfo.pwd+" "+serverIp + " " +vms+" 2>&1";
+    QString cmd = "/usr/bin/getVMsInfo.py "+m_userInfo.uname+" "+m_userInfo.pwd+" "+serverIp + " " +vms+" 2>&1";
     QString res = GetCmdRes(cmd).trimmed();
     QStringList list = res.split('\n');
     if(list.size()<1)
@@ -228,7 +228,7 @@ void Worker::doGetAllInfo(QVector<VM_CONFIG> *vmArr, QString &vms)
 bool Worker::operateVMs(QString vid, STAT &status)
 {
     QString operate = status==RUNING?"shutdown":"startup";
-    QString cmd = "/root/vmOperate.py "+m_userInfo.uname+" "+m_userInfo.pwd+" "+serverIp + " " +vid+" "+operate+" 2>&1";
+    QString cmd = "/usr/bin/vmOperate.py "+m_userInfo.uname+" "+m_userInfo.pwd+" "+serverIp + " " +vid+" "+operate+" 2>&1";
     QString res = GetCmdRes(cmd).trimmed();
     QStringList list = res.split('\n');
     if(list.size()<1)
@@ -249,6 +249,35 @@ bool Worker::operateVMs(QString vid, STAT &status)
         }
         status = status ==RUNING? SHUTDOWN:RUNING;
         return true;
+    }
+    return true;
+}
+
+bool Worker::needUpdate()
+{
+    QString cmd = "/usr/bin/update.sh  2>&1";
+    QString res = GetCmdRes(cmd).trimmed();
+    if(res == "0")
+    {
+        return false;
+    }else
+        return true;
+}
+
+bool Worker::update(QString &err)
+{
+    QString cmd = "pkexec -u root apt-get --reinstall install cdos-desktop-cloud 2>&1; echo $?";
+    QString res = GetCmdRes(cmd).trimmed();
+    QStringList strlist = res.split('\n');
+    if(strlist.length()<2)
+    {
+        err = tr("命令运行结果解析失败");
+        return false;
+    }
+    if(strlist.last()!="0")
+    {
+        err = strlist[strlist.length()-2];
+        return false;
     }
     return true;
 }

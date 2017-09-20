@@ -41,7 +41,7 @@ LoginDialog::LoginDialog(UserInfo &usrInfo, QWidget *parent) :
 
 bool LoginDialog::Login()
 {
-    QString cmd = "/root/getLoginStatus.py "+m_userInfo.uname+" "+m_userInfo.pwd+" "+serverIP + " 2>&1";
+    QString cmd = "/usr/bin/getLoginStatus.py "+m_userInfo.uname+" "+m_userInfo.pwd+" "+serverIP + " 2>&1";
     QString res = GetCmdRes(cmd).trimmed();
     QStringList list = res.split('\n');
     if(list.size()<1)

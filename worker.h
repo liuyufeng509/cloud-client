@@ -20,13 +20,15 @@ public:
     void setUserInfo(UserInfo usr){m_userInfo=usr;}
 
     bool operateVMs(QString vid, STAT &status);
+    bool getVMsIpPort(QVector<VM_CONFIG> &vmArr);
+
+    bool needUpdate();
+    bool update(QString &err);
 private:
     bool Login(UserInfo  &userInfo);
 
     bool getVMs(QVector<VM_CONFIG> &vmArr, QString &vms);
     bool parseVMs(QVector<VM_CONFIG> &vmArr,QByteArray &ba);
-
-    bool getVMsIpPort(QVector<VM_CONFIG> &vmArr);
     bool parseVMsIpPort(QVector<VM_CONFIG> &vmArr,QString output);
 
     bool getVMsInfo(QVector<VM_CONFIG> &vmArr,QString &vms);

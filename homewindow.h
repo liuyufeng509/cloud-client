@@ -28,7 +28,8 @@ public:
     ~HomeWindow();
     void initLanguage();
 
-    void updateUI();
+    void updateViewUI();
+    void updatetableUI();
 
     void clearLayout(QLayout *layout);
 
@@ -45,10 +46,18 @@ private slots:
     void onButtonCloseClicked();
 
     void openVm(VM_CONFIG vm);
+    void openVmOfTable(int row, int column);
     void handleGetAllInfoRes(bool success);
     void on_freshButton_clicked();
 
     void on_logoutButton_clicked();
+
+    void tabChanged(int );
+    void on_tableWidget_customContextMenuRequested(QPoint pos);
+    void detailActionSlot();
+    void operateActionSlot();
+
+    void on_updateButton_clicked();
 
 private:
     void moveToCenter();
@@ -72,6 +81,12 @@ private:
     WaitDialog *waitD;
     QThread workerThread;
     Worker *worker;
+
+
+    //table context menu
+    QMenu *m_menu;
+    QAction *operAction;
+    QAction *detailAction;
 
 };
 

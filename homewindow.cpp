@@ -27,6 +27,7 @@
 #include<QJsonObject>
 #include<QJsonArray>
 #include<QJsonDocument>
+#include "detaildialog.h"
 
 HomeWindow::HomeWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -66,25 +67,6 @@ HomeWindow::HomeWindow(QWidget *parent) :
     worker->setUserInfo(m_userInfo);
     emit getAllInfo(&vmArray,vms);
     waitDiaogAppear();
-//    getVMs();
-//    getVMsIpPort();
-//    getVMsInfo();
-//    for(int i=0;i<vmArray.size();i++)
-//    {
-//        qDebug()<<"***************************************";
-//        qDebug()<<"vmArray["<<i<<"].name="<<vmArray[i].name;
-//        qDebug()<<"vmArray["<<i<<"].vid="<<vmArray[i].vid;
-//        qDebug()<<"vmArray["<<i<<"].ip="<<vmArray[i].ip;
-//        qDebug()<<"vmArray["<<i<<"].port="<<vmArray[i].port;
-//        qDebug()<<"vmArray["<<i<<"].status="<<vmArray[i].status;
-//        qDebug()<<"vmArray["<<i<<"].created="<<vmArray[i].created;
-//        for(int j=0;j<vmArray[i].addrs.size();j++)
-//        {
-//            qDebug()<<"vmArray["<<i<<"].addr["<<j<<"].ip="<<vmArray[i].addrs[j].ip;
-//            qDebug()<<"vmArray["<<i<<"].addr["<<j<<"].mac="<<vmArray[i].addrs[j].mac;
-//            qDebug()<<"vmArray["<<i<<"].addr["<<j<<"].type="<<vmArray[i].addrs[j].type;
-//        }
-//    }
 
     //initUI
     initTitleBar();
@@ -93,7 +75,88 @@ HomeWindow::HomeWindow(QWidget *parent) :
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);    // 设置尺寸属性
     setMouseTracking(true);    // 界面拉伸需要这个属性
 
-   // updateUI();
+    connect(ui->tabWidget, SIGNAL(currentChanged(int )), this, SLOT(tabChanged(int )));
+
+    ui->tableWidget->horizontalHeader()->setStretchLastSection(true);
+    ui->tableWidget->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+    QHeaderView* headerView = ui->tableWidget->verticalHeader();
+    headerView->setHidden(true);
+
+    ui->tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tableWidget->setSelectionMode ( QAbstractItemView::SingleSelection); //设置选择模式，选择单行
+    ui->tableWidget->setEditTriggers ( QAbstractItemView::NoEditTriggers );
+    connect(ui->tableWidget, &QTableWidget::cellDoubleClicked, this, &HomeWindow::openVmOfTable);
+
+    ui->tableWidget->setContextMenuPolicy(Qt::CustomContextMenu);   //右键菜单
+    m_menu = new QMenu(ui->tableWidget);
+    operAction = new QAction(this);
+    detailAction = new QAction(this);
+    detailAction->setText(tr("详细信息"));
+    operAction->setText(tr("关机"));
+
+
+    connect(operAction, SIGNAL(triggered()), this, SLOT(operateActionSlot()));
+    connect(detailAction, SIGNAL(triggered()), this, SLOT(detailActionSlot()));
+
+}
+
+void HomeWindow::operateActionSlot()
+{
+    //startup or shutdown
+    int row = ui->tableWidget->currentRow();
+    if(row<0)
+    {
+        QMessageBox::information(NULL, "提示","请选择操作的虚拟机");
+        return;
+    }
+
+
+    if(worker->operateVMs(vmArray[row].vid,vmArray[row].status))
+    {
+        worker->getVMsIpPort(vmArray);
+        QMessageBox::information(NULL, "提示","开关机操作成功");
+        updatetableUI();
+        updateViewUI();
+    }
+}
+
+void HomeWindow::detailActionSlot()
+{
+    //detail info
+    int row = ui->tableWidget->currentRow();
+    if(row<0)
+    {
+        QMessageBox::information(NULL, "提示","请选择操作的虚拟机");
+        return;
+    }
+    DetailDialog dlg(vmArray[row]);
+    dlg.exec();
+}
+
+
+
+void HomeWindow::on_tableWidget_customContextMenuRequested(QPoint pos)
+{
+    m_menu->addAction(operAction);
+    m_menu->addAction(detailAction);
+    int row = ui->tableWidget->currentRow();
+    if(row<0)
+    {
+        return;
+    }
+    if(vmArray[row].status == RUNING)
+    {
+        operAction->setText(tr("关机"));
+    }else
+        operAction->setText(tr("开机"));
+    m_menu->exec(QCursor::pos());
+    pos.isNull();
+}
+
+void HomeWindow::tabChanged(int index)
+{
+    if(index ==1)
+        updatetableUI();
 }
 
 void HomeWindow::handleGetAllInfoRes(bool success)
@@ -103,7 +166,8 @@ void HomeWindow::handleGetAllInfoRes(bool success)
     {
         QMessageBox::warning(this, "警告", "获取虚拟机信息失败，请尝试刷新");
     }
-    updateUI();
+    updateViewUI();
+    updatetableUI();
 }
 
 void HomeWindow::clearLayout(QLayout *layout)
@@ -124,7 +188,25 @@ void HomeWindow::clearLayout(QLayout *layout)
     }
 }
 
-void HomeWindow::updateUI()
+void HomeWindow::updatetableUI()
+{
+    ui->tableWidget->setRowCount(0);
+    ui->tableWidget->setRowCount(vmArray.size());
+    ui->tableWidget->setToolTip(tr("右键可对用户进行操作"));
+    for(int i=0; i<vmArray.size(); i++)
+    {
+        QIcon icon;
+        icon.addFile(":/new/index/run_namal", QSize(32,32));
+        ui->tableWidget->setItem(i, 0, new QTableWidgetItem(icon,vmArray[i].name));
+        ui->tableWidget->setItem(i, 1, new QTableWidgetItem(vmArray[i].vid));
+        ui->tableWidget->setItem(i, 2, new QTableWidgetItem(QString::number(vmArray[i].status)));
+        ui->tableWidget->setItem(i, 3, new QTableWidgetItem(vmArray[i].ip));
+        ui->tableWidget->setItem(i, 4, new QTableWidgetItem(QString::number(vmArray[i].port)));
+        ui->tableWidget->setItem(i, 5, new QTableWidgetItem(vmArray[i].created));
+    }
+}
+
+void HomeWindow::updateViewUI()
 {
     clearLayout(ui->vmsGridLayout);
     for(int i=0; i<vmArray.size(); i++)
@@ -135,6 +217,17 @@ void HomeWindow::updateUI()
        ui->vmsGridLayout->addWidget(vm, i/4, i%4);
        connect(vm, &VMWidget::emitData, this, &HomeWindow::openVm);
    }
+}
+
+void HomeWindow::openVmOfTable(int row, int column)
+{
+    if(row<0 || column<0)
+    {
+        QMessageBox::information(NULL, tr("提示"),tr("请选中要打开的虚拟机"));
+        return;
+    }
+
+    openVm(vmArray[row]);
 }
 
 void HomeWindow::openVm(VM_CONFIG vm)
@@ -253,8 +346,6 @@ void HomeWindow::waitDiaogAppear()
 }
 
 
-
-
 void HomeWindow::on_freshButton_clicked()
 {
     emit getAllInfo(&vmArray,vms);
@@ -265,4 +356,27 @@ void HomeWindow::on_freshButton_clicked()
 void HomeWindow::on_logoutButton_clicked()
 {
     exit(0);
+}
+
+void HomeWindow::on_updateButton_clicked()
+{
+    if(worker->needUpdate())
+    {
+        if(QMessageBox::question(NULL, tr("提示"), tr("检测到新版本，是否需要更新？"))==QMessageBox::No)
+        {
+            return;
+        }else
+        {
+            QString err = "";
+            if(worker->update(err))
+                QMessageBox::information(NULL, tr("提示"), tr("升级结束"));
+            else
+                QMessageBox::information(NULL, tr("提示"), tr("升级失败:")+err);
+        }
+
+    }else
+    {
+        QMessageBox::information(NULL, tr("提示"), tr("已是最新版本，不需要升级"));
+    }
+
 }

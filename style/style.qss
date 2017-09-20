@@ -32,6 +32,29 @@ QPushButton#freshButton:pressed {
     background-color:#50a495;
 }
 
+QPushButton#updateButton {
+    border: 1px solid white;
+    border-radius: 0px;
+    color:white;
+    font-weight:bold;
+    background-color:#50a495;
+    min-width:70px;
+}
+QPushButton#updateButton:hover {
+    border: 1px solid white;
+    border-radius: 0px;
+    color:white;
+    font-weight:normal;
+    background-color:#2a564e;
+}
+QPushButton#updateButton:pressed {
+    border: 1px solid white;
+    border-radius: 0px;
+    color:white;
+    font-weight:bold;
+    background-color:#50a495;
+}
+
 QPushButton#logoutButton {
     border: 1px solid white;
     border-radius: 0px;
