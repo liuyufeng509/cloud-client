@@ -94,14 +94,14 @@ bool Worker::parseVMs(QVector<VM_CONFIG> &vmArray,QByteArray &ba)
 
 bool Worker::getVMsIpPort(QVector<VM_CONFIG> &vmArr)
 {
-    QString cmd = "telnet "+serverIp + " "+QString::number(59000) +" 2>&1";
+    QString cmd = "/usr/bin/soc.py "+serverIp + " "+QString::number(59000) +" 2>&1";
     QString res = GetCmdRes(cmd).trimmed();
     QStringList list = res.split('\n');
-    if(list.size()<5)
-    {
-        qDebug()<<tr("telnet: info nums less than 5");
-        return false;
-    }
+//    if(list.size()<5)
+//    {
+//        qDebug()<<tr("telnet: info nums less than 5");
+//        return false;
+//    }
     for(int i=0; i<list.size();i++)
     {
         if(list[i].contains("\"instances\"")&&parseVMsIpPort(vmArr, list[i]))

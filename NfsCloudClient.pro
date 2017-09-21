@@ -10,7 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 
 #target folder
-TARGET = NfsCloudClient
+TARGET = cdos-desktop-cloud 
 TEMPLATE = app
 DESTDIR = bin/
 UI_DIR = forms
