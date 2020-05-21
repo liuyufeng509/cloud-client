@@ -30,7 +30,10 @@ SOURCES += main.cpp\
     mytitlebar.cpp \
     waitdialog.cpp \
     worker.cpp \
-    detaildialog.cpp
+    detaildialog.cpp \
+    scale/cursorposcalculator.cpp \
+    scale/frameless_helper.cpp \
+    scale/widgetdata.cpp
 
 HEADERS  += \
     homewindow.h \
@@ -41,7 +44,10 @@ HEADERS  += \
     mytitlebar.h \
     waitdialog.h \
     worker.h \
-    detaildialog.h
+    detaildialog.h \
+    scale/cursorposcalculator.h \
+    scale/frameless_helper.h \
+    scale/widgetdata.h
 
 FORMS    += \
     vmwidget.ui \

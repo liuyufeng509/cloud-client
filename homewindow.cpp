@@ -29,6 +29,7 @@
 #include<QJsonArray>
 #include<QJsonDocument>
 #include "detaildialog.h"
+#include "scale/frameless_helper.h"
 
 HomeWindow::HomeWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -41,17 +42,17 @@ HomeWindow::HomeWindow(QWidget *parent) :
 
     //初始化语言
 
-    LoginDialog dia(m_userInfo);
-    if (QDialog::Accepted == dia.exec())
-    {
-        this->serverIp = dia.getServerIP();
-        qDebug() << this->serverIp << endl;
-        ui->label->setText("<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; color:#458b67;\">你好，"+m_userInfo.uname+"，欢迎使用方德云客户端！</span></p></body></html>");
-    }
-    else
-    {
-        exit(1);
-    }
+//    LoginDialog dia(m_userInfo);
+//    if (QDialog::Accepted == dia.exec())
+//    {
+//        this->serverIp = dia.getServerIP();
+//        qDebug() << this->serverIp << endl;
+//        ui->label->setText("<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; color:#458b67;\">你好，"+m_userInfo.uname+"，欢迎使用方德云客户端！</span></p></body></html>");
+//    }
+//    else
+//    {
+//        exit(1);
+//    }
 
     //thread
     worker = new Worker;
@@ -98,6 +99,17 @@ HomeWindow::HomeWindow(QWidget *parent) :
 
     connect(operAction, SIGNAL(triggered()), this, SLOT(operateActionSlot()));
     connect(detailAction, SIGNAL(triggered()), this, SLOT(detailActionSlot()));
+
+
+    //使用拖拽拉伸功能
+    FramelessHelper *pHelper = new FramelessHelper(this);
+    pHelper->activateOn(this);  //激活当前窗体
+    pHelper->setTitleHeight(m_titleBar->height());  //设置窗体的标题栏高度
+    //pHelper->setTitleHeight(30);
+    pHelper->setWidgetMovable(true);  //设置窗体可移动
+    pHelper->setWidgetResizable(true);  //设置窗体可缩放
+    pHelper->setRubberBandOnMove(true);  //设置橡皮筋效果-可移动
+    pHelper->setRubberBandOnResize(true);  //设置橡皮筋效果-可缩放
 
 }
 
@@ -165,10 +177,28 @@ void HomeWindow::tabChanged(int index)
 void HomeWindow::handleGetAllInfoRes(bool success)
 {
     waitDialogAccept();
-    if(!success)
-    {
-        QMessageBox::warning(this, "警告", "获取虚拟机信息失败，请尝试刷新");
-    }
+//    if(!success)
+//    {
+//        QMessageBox::warning(this, "警告", "获取虚拟机信息失败，请尝试刷新");
+//    }
+
+    VM_CONFIG vm1;
+    vm1.name = "vm1";
+    vm1.vid="asdfbgasdgkjldajdf";
+    vm1.ip="192.168.0.1";
+    vm1.port = 22;
+    vm1.status = RUNING;
+
+    VM_CONFIG vm2;
+    vm2.name = "vm2";
+    vm2.vid="asdfbgasdgkjldajdf";
+    vm2.ip="192.168.0.2";
+    vm2.port = 22;
+    vm2.status = SHUTDOWN;
+
+    vmArray.push_back(vm1);
+    vmArray.push_back(vm2);
+
     updateViewUI();
     updatetableUI();
 }

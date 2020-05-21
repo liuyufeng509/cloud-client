@@ -7,6 +7,8 @@
 #include <QMetaType>
 #include "logindialog.h"
 #include "ui_logindialog.h"
+#include <QRegExpValidator>
+
 
 LoginDialog::LoginDialog(UserInfo &usrInfo, QWidget *parent) :
     QDialog(parent),
