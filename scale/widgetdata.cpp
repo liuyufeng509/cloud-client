@@ -259,7 +259,7 @@ void WidgetData::handleMousePressEvent(QMouseEvent *event)
         else if (d->m_bRubberBandOnMove)
         {
             m_pRubberBand->setGeometry(frameRect);
-            m_pRubberBand->show();
+        //    m_pRubberBand->show();//显示时，有可能会截获主窗口的事件，造成无任何事件接收
         }
     }
 }
@@ -268,6 +268,7 @@ void WidgetData::handleMouseReleaseEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
     {
+        qDebug()<<"left button released";
         m_bLeftButtonPressed = false;
         m_bLeftButtonTitlePressed = false;
         m_pressedMousePos.reset();
@@ -281,9 +282,11 @@ void WidgetData::handleMouseReleaseEvent(QMouseEvent *event)
 
 void WidgetData::handleMouseMoveEvent(QMouseEvent *event)
 {
-    //qDebug()<<"move event";
+
     if (m_bLeftButtonPressed)
     {
+        qDebug()<<"m_bWidgetResizable:"<<d->m_bWidgetResizable
+               <<" m_bOnEdges:"<<m_pressedMousePos.m_bOnEdges;
         if (d->m_bWidgetResizable && m_pressedMousePos.m_bOnEdges)
         {
             resizeWidget(event->globalPos());
@@ -295,6 +298,7 @@ void WidgetData::handleMouseMoveEvent(QMouseEvent *event)
     }
     else if (d->m_bWidgetResizable)
     {
+        qDebug()<<"move event";
         updateCursorShape(event->globalPos());
     }
 }

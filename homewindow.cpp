@@ -80,7 +80,7 @@ HomeWindow::HomeWindow(QWidget *parent) :
     setWindowIcon(QIcon(":/new/index/taskbar"));
     this->setWindowFlags(Qt::FramelessWindowHint);
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);    // 设置尺寸属性
-    setMouseTracking(true);    // 界面拉伸需要这个属性
+   // setMouseTracking(false);    // 界面拉伸需要这个属性
 
     connect(ui->tabWidget, SIGNAL(currentChanged(int )), this, SLOT(tabChanged(int )));
 
@@ -107,7 +107,7 @@ HomeWindow::HomeWindow(QWidget *parent) :
 
 
     //使用拖拽拉伸功能
-    FramelessHelper *pHelper = new FramelessHelper(this);
+    FramelessHelper *pHelper = new FramelessHelper(this->centralWidget());
     pHelper->activateOn(this);  //激活当前窗体
     pHelper->setTitleHeight(m_titleBar->height());  //设置窗体的标题栏高度
     //pHelper->setTitleHeight(30);
@@ -229,7 +229,7 @@ void HomeWindow::clearLayout(QLayout *layout)
 void HomeWindow::resizeEvent(QResizeEvent *e)
 {
     //qDebug()<<"resize Event happend";
-    updateViewUI();
+   // updateViewUI();
     QMainWindow::resizeEvent(e);
 }
 

@@ -3,6 +3,7 @@
 #include <QMouseEvent>
 #include <QHoverEvent>
 #include <QApplication>
+#include<QtDebug>
 #include "frameless_helper.h"
 
 #include "widgetdata.h"
@@ -41,10 +42,15 @@ bool FramelessHelper::eventFilter(QObject *obj, QEvent *event)
     case QEvent::MouseButtonRelease:
     case QEvent::Leave:
     {
+        //qDebug()<<"event->type():"<<event->type();
         WidgetData *data = d->m_widgetDataHash.value(static_cast<QWidget*>(obj));
         if (data)
         {
             data->handleWidgetEvent(event);
+            if(event->type() == QEvent::MouseButtonPress)
+            {
+                //qDebug()<<"left button clicked4";
+            }
             return true;
         }
     }
@@ -79,6 +85,7 @@ void FramelessHelper::setRubberBandOnMove(bool movable)
     QList<WidgetData*> list = d->m_widgetDataHash.values();
     foreach (WidgetData *data, list)
     {
+        qDebug()<<"rubber band on move";
         data->updateRubberBandStatus();
     }
 }
@@ -99,6 +106,7 @@ void FramelessHelper::setRubberBandOnResize(bool resizable)
     QList<WidgetData*> list = d->m_widgetDataHash.values();
     foreach (WidgetData *data, list)
     {
+        qDebug()<<"rubber band on resize";
         data->updateRubberBandStatus();
     }
 }
