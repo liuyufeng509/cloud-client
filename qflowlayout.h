@@ -29,6 +29,8 @@ private:
     int doLayout(const QRect &rect, bool testOnly) const;
     int smartSpacing(QStyle::PixelMetric pm) const;
 
+    int calcMoveDistance(QRect rect) const; //计算要将items移动到中心显示，需要移动多少距离
+
 private:
     QList<QLayoutItem *> itemList;
     int m_hSpace;

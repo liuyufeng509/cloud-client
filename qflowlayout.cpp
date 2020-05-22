@@ -102,14 +102,9 @@ QSize QFlowLayout::minimumSize() const
     return size;
 }
 
-int QFlowLayout::doLayout(const QRect &rect, bool testOnly) const
+int QFlowLayout::calcMoveDistance(QRect effectiveRect) const
 {
-    int left, top, right, bottom;
-    getContentsMargins(&left, &top, &right, &bottom);
-    QRect effectiveRect = rect.adjusted(+left, +top, -right, -bottom);
-    int x = effectiveRect.x();
-    int y = effectiveRect.y();
-    int lineHeight = 0;
+    int x = effectiveRect.x(), endX=0;
 
     QLayoutItem *item;
     foreach (item, itemList) {
@@ -122,7 +117,40 @@ int QFlowLayout::doLayout(const QRect &rect, bool testOnly) const
         if (spaceY == -1)
             spaceY = wid->style()->layoutSpacing(
                         QSizePolicy::PushButton, QSizePolicy::PushButton, Qt::Vertical);
+        int nextX = x + item->sizeHint().width() + spaceX;
+        if (nextX - spaceX > effectiveRect.right()) {
+            endX = x;//获取一行的结束
+            break;
+        }
+        x = nextX;
+    }
+    if(endX == 0)   //说明所有控件长度和都不如layout的大
+        endX = x;
 
+    return (effectiveRect.right()-endX)/2.0;
+}
+
+int QFlowLayout::doLayout(const QRect &rect, bool testOnly) const
+{
+    int left, top, right, bottom;
+    getContentsMargins(&left, &top, &right, &bottom);
+    QRect effectiveRect = rect.adjusted(+left, +top, -right, -bottom);
+    int x = effectiveRect.x();
+    int y = effectiveRect.y();
+    int lineHeight = 0;
+    int movedis = this->calcMoveDistance(effectiveRect);
+
+    QLayoutItem *item;
+    foreach (item, itemList) {
+        QWidget *wid = item->widget();
+        int spaceX = horizontalSpacing();
+        if (spaceX == -1)
+            spaceX = wid->style()->layoutSpacing(
+                        QSizePolicy::PushButton, QSizePolicy::PushButton, Qt::Horizontal);
+        int spaceY = verticalSpacing();
+        if (spaceY == -1)
+            spaceY = wid->style()->layoutSpacing(
+                        QSizePolicy::PushButton, QSizePolicy::PushButton, Qt::Vertical);
         int nextX = x + item->sizeHint().width() + spaceX;
         if (nextX - spaceX > effectiveRect.right() && lineHeight > 0) {
             x = effectiveRect.x();
@@ -132,7 +160,9 @@ int QFlowLayout::doLayout(const QRect &rect, bool testOnly) const
         }
 
         if (!testOnly)
-            item->setGeometry(QRect(QPoint(x, y), item->sizeHint()));
+        {
+            item->setGeometry(QRect(QPoint(x+movedis, y), item->sizeHint()));
+        }
 
         x = nextX;
         lineHeight = qMax(lineHeight, item->sizeHint().height());

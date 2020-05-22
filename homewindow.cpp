@@ -40,8 +40,8 @@ HomeWindow::HomeWindow(QWidget *parent) :
     this->setWindowFlags(Qt::FramelessWindowHint);
     setMinimumSize(minWidth, minHeight);    //最小值设为700*500
 
-//    m_flowLayout = new QFlowLayout;
-//    ui->vmsWidget->setLayout(m_flowLayout);
+    m_flowLayout = new QFlowLayout;
+    ui->vmsWidget->setLayout(m_flowLayout);
 
     moveToCenter();
 
@@ -253,8 +253,8 @@ void HomeWindow::updatetableUI()
 
 void HomeWindow::updateViewUI()
 {
-    clearLayout(ui->vmsGridLayout);
-    //clearLayout(m_flowLayout);
+    //clearLayout(ui->vmsGridLayout);
+    clearLayout(m_flowLayout);
     //计算每行放几个vm
 
     for(int i=0; i<vmArray.size(); i++)
@@ -263,8 +263,8 @@ void HomeWindow::updateViewUI()
        int k = this->width()/vm->width();
         vm->setSvrIP(serverIp);
         vm->setUserInfo(m_userInfo);
-       ui->vmsGridLayout->addWidget(vm, i/k, i%k);
-        //m_flowLayout->addWidget(vm);
+       //ui->vmsGridLayout->addWidget(vm, i/k, i%k);
+        m_flowLayout->addWidget(vm);
        connect(vm, &VMWidget::emitData, this, &HomeWindow::openVm);
    }
 }
