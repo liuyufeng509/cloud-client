@@ -5,8 +5,8 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    QFile *qss = new QFile(":/new/qss/style");
-   // QFile *qss = new QFile("/home/nfs/program/cloud-client/style/style.qss");
+    //QFile *qss = new QFile(":/new/qss/style");
+    QFile *qss = new QFile("F:/source/Qt/cloud-client/style/style.qss");
     qss->open(QFile::ReadOnly);
     QString styleSheet = qss->readAll();
     a.setStyleSheet(styleSheet);

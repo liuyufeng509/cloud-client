@@ -39,5 +39,7 @@ typedef QVector<VM_CONFIG>   VMVECTOR;//TE策略列表类型
 
 QString GetCmdRes(QString cmd);
 
+extern const qreal WIDTH_TO_HEIGHT;
+
 #endif // COMMON
 

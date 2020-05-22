@@ -59,22 +59,23 @@
        <item>
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt; font-weight:600; color:#458b67;&quot;&gt;你好，demo，欢迎使用方德云客户端！&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt; font-weight:600; color:#458b67;&quot;&gt;你好,欢迎使用vpn客户端！&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>
        <item>
-        <spacer name="horizontalSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+        <widget class="QLineEdit" name="lineEdit">
+         <property name="styleSheet">
+          <string notr="true">border: 1px solid #C4C4C3;</string>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>809</width>
-           <height>20</height>
-          </size>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="searchButton">
+         <property name="text">
+          <string> 搜索</string>
          </property>
-        </spacer>
+        </widget>
        </item>
        <item>
         <widget class="QPushButton" name="freshButton">
@@ -135,8 +136,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1044</width>
-             <height>528</height>
+             <width>1042</width>
+             <height>540</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -181,7 +182,11 @@
                </spacer>
               </item>
               <item>
-               <layout class="QGridLayout" name="vmsGridLayout"/>
+               <layout class="QGridLayout" name="vmsGridLayout">
+                <property name="horizontalSpacing">
+                 <number>6</number>
+                </property>
+               </layout>
               </item>
               <item>
                <spacer name="horizontalSpacer_4">

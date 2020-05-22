@@ -32,6 +32,30 @@ QPushButton#freshButton:pressed {
     background-color:#50a495;
 }
 
+/*搜索按钮QPushButton*/
+QPushButton#searchButton {
+    border: 1px solid white;
+    border-radius: 0px;
+    color:white;
+    font-weight:bold;
+    background-color:#50a495;
+    min-width:70px;
+}
+QPushButton#searchButton:hover {
+    border: 1px solid white;
+    border-radius: 0px;
+    color:white;
+    font-weight:normal;
+    background-color:#2a564e;
+}
+QPushButton#searchButton:pressed {
+    border: 1px solid white;
+    border-radius: 0px;
+    color:white;
+    font-weight:bold;
+    background-color:#50a495;
+}
+
 QPushButton#updateButton {
     border: 1px solid white;
     border-radius: 0px;
@@ -268,6 +292,8 @@ QLineEdit
 {
     border: 1px solid #C4C4C3;
 }
+
+
 
 
 QListWidget

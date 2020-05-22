@@ -3,6 +3,7 @@
 #include <QMouseEvent>
 #include <QtDebug>
 
+const qreal WIDTH_TO_HEIGHT = 1.4;  //宽高比 700/500
 /***** WidgetData *****/
 WidgetData::WidgetData(FramelessHelperPrivate *_d, QWidget *pTopLevelWidget)
 {
@@ -140,14 +141,14 @@ void WidgetData::resizeWidget(const QPoint &gMousePos)
     int minWidth = m_pWidget->minimumWidth();
     int minHeight = m_pWidget->minimumHeight();
     qDebug()<<"minWidt:"<<minWidth<<" minHeight:"<<minHeight;
-    qDebug()<<"m_bOnTopLeftEdge:"<<m_pressedMousePos.m_bOnTopLeftEdge<<
-              " m_bOnBottomLeftEdge:"<<m_pressedMousePos.m_bOnBottomLeftEdge<<
-              " m_bOnTopRightEdge:"<<m_pressedMousePos.m_bOnTopRightEdge<<
-              " m_bOnBottomRightEdge:"<<m_pressedMousePos.m_bOnBottomRightEdge<<
-              " m_bOnLeftEdge:"<<m_pressedMousePos.m_bOnLeftEdge<<
-              " m_bOnRightEdge:"<<m_pressedMousePos.m_bOnRightEdge<<
-              " m_bOnTopEdge:"<<m_pressedMousePos.m_bOnTopEdge<<
-              " m_bOnBottomEdge:"<<m_pressedMousePos.m_bOnBottomEdge;
+//    qDebug()<<"m_bOnTopLeftEdge:"<<m_pressedMousePos.m_bOnTopLeftEdge<<
+//              " m_bOnBottomLeftEdge:"<<m_pressedMousePos.m_bOnBottomLeftEdge<<
+//              " m_bOnTopRightEdge:"<<m_pressedMousePos.m_bOnTopRightEdge<<
+//              " m_bOnBottomRightEdge:"<<m_pressedMousePos.m_bOnBottomRightEdge<<
+//              " m_bOnLeftEdge:"<<m_pressedMousePos.m_bOnLeftEdge<<
+//              " m_bOnRightEdge:"<<m_pressedMousePos.m_bOnRightEdge<<
+//              " m_bOnTopEdge:"<<m_pressedMousePos.m_bOnTopEdge<<
+//              " m_bOnBottomEdge:"<<m_pressedMousePos.m_bOnBottomEdge;
     if (m_pressedMousePos.m_bOnTopLeftEdge)
     {
         left = gMousePos.x();
@@ -189,19 +190,26 @@ void WidgetData::resizeWidget(const QPoint &gMousePos)
     qDebug()<<"newRect:"<<newRect;
     if (newRect.isValid())
     {
-        if (minWidth > newRect.width())
+        //橡皮筋可以任意大小，但是松开时，窗口是有最大最小限制的，所以这里的判断可以去掉。
+//        if (minWidth > newRect.width())
+//        {
+//            if (left != origRect.left())    //说明缩放的是左边，将左边设置为最小宽度
+//                newRect.setLeft(origRect.right()-minWidth);
+//            else    //缩放有边界
+//                newRect.setRight(origRect.left()+minWidth);
+//        }
+//        if (minHeight > newRect.height())
+//        {
+//            if (top != origRect.top())  //说明缩放的是上边界
+//                newRect.setTop(origRect.bottom()+minHeight);
+//            else
+//                newRect.setBottom(origRect.top()-minHeight);
+//        }
+        //四个角拉伸缩放时，要保持比例。
+        if(m_pressedMousePos.m_bOnBottomRightEdge||m_pressedMousePos.m_bOnTopLeftEdge||
+           m_pressedMousePos.m_bOnBottomLeftEdge||m_pressedMousePos.m_bOnTopRightEdge)
         {
-            if (left != origRect.left())
-                newRect.setLeft(origRect.left());
-            else
-                newRect.setRight(origRect.right());
-        }
-        if (minHeight > newRect.height())
-        {
-            if (top != origRect.top())
-                newRect.setTop(origRect.top());
-            else
-                newRect.setBottom(origRect.bottom());
+            newRect.setWidth(newRect.height()*WIDTH_TO_HEIGHT);
         }
         if (d->m_bRubberBandOnResize )
         {
@@ -273,7 +281,7 @@ void WidgetData::handleMouseReleaseEvent(QMouseEvent *event)
 
 void WidgetData::handleMouseMoveEvent(QMouseEvent *event)
 {
-    qDebug()<<"move event";
+    //qDebug()<<"move event";
     if (m_bLeftButtonPressed)
     {
         if (d->m_bWidgetResizable && m_pressedMousePos.m_bOnEdges)

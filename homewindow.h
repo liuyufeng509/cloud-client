@@ -17,7 +17,7 @@ class QButtonGroup;
 class QTranslator;
 class QSettings;
 class QMenu;
-
+class QFlowLayout;
 
 class HomeWindow : public QMainWindow
 {
@@ -38,6 +38,7 @@ signals:
 
 protected:
     void keyPressEvent(QKeyEvent *e);
+    void resizeEvent(QResizeEvent *e);
 
 private slots:
     void onButtonMinClicked();
@@ -89,6 +90,10 @@ private:
 public:
     QVector<VM_CONFIG> vmArray;
 
+
+    int minWidth=700;
+    int minHeight=500;
+    QFlowLayout *m_flowLayout;
 };
 
 

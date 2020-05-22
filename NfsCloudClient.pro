@@ -33,7 +33,8 @@ SOURCES += main.cpp\
     detaildialog.cpp \
     scale/cursorposcalculator.cpp \
     scale/frameless_helper.cpp \
-    scale/widgetdata.cpp
+    scale/widgetdata.cpp \
+    qflowlayout.cpp
 
 HEADERS  += \
     homewindow.h \
@@ -47,7 +48,9 @@ HEADERS  += \
     detaildialog.h \
     scale/cursorposcalculator.h \
     scale/frameless_helper.h \
-    scale/widgetdata.h
+    scale/widgetdata.h \
+    common.h \
+    qflowlayout.h
 
 FORMS    += \
     vmwidget.ui \

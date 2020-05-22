@@ -31,4 +31,7 @@
     <qresource prefix="/new/qss">
         <file alias="style">style/style.qss</file>
     </qresource>
+    <qresource prefix="/new/vpn">
+        <file alias="vpnlogo">image/logo.png</file>
+    </qresource>
 </RCC>

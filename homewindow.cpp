@@ -30,6 +30,7 @@
 #include<QJsonDocument>
 #include "detaildialog.h"
 #include "scale/frameless_helper.h"
+#include   "qflowlayout.h"
 
 HomeWindow::HomeWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -37,6 +38,10 @@ HomeWindow::HomeWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     this->setWindowFlags(Qt::FramelessWindowHint);
+    setMinimumSize(minWidth, minHeight);    //最小值设为700*500
+
+//    m_flowLayout = new QFlowLayout;
+//    ui->vmsWidget->setLayout(m_flowLayout);
 
     moveToCenter();
 
@@ -221,6 +226,13 @@ void HomeWindow::clearLayout(QLayout *layout)
     }
 }
 
+void HomeWindow::resizeEvent(QResizeEvent *e)
+{
+    //qDebug()<<"resize Event happend";
+    updateViewUI();
+    QMainWindow::resizeEvent(e);
+}
+
 void HomeWindow::updatetableUI()
 {
     ui->tableWidget->setRowCount(0);
@@ -242,12 +254,17 @@ void HomeWindow::updatetableUI()
 void HomeWindow::updateViewUI()
 {
     clearLayout(ui->vmsGridLayout);
+    //clearLayout(m_flowLayout);
+    //计算每行放几个vm
+
     for(int i=0; i<vmArray.size(); i++)
    {
        VMWidget *vm = new VMWidget(vmArray[i],this);
+       int k = this->width()/vm->width();
         vm->setSvrIP(serverIp);
         vm->setUserInfo(m_userInfo);
-       ui->vmsGridLayout->addWidget(vm, i/4, i%4);
+       ui->vmsGridLayout->addWidget(vm, i/k, i%k);
+        //m_flowLayout->addWidget(vm);
        connect(vm, &VMWidget::emitData, this, &HomeWindow::openVm);
    }
 }
@@ -278,7 +295,8 @@ void HomeWindow::initTitleBar()
 {
     m_titleBar = new MyTitleBar(this);
     m_titleBar->move(0, 0);
-    m_titleBar->setTitleIcon(":/new/index/mainwintitle",QSize(145, 30));
+    //m_titleBar->setTitleIcon(":/new/index/mainwintitle",QSize(145, 30));
+    m_titleBar->setTitleIcon(":new/vpn/vpnlogo",QSize(145, 30));
     m_titleBar->setTitleContent(tr("方德云客户端"), 11);
     m_titleBar->setBackgroundColor(69, 139, 103);
     m_titleBar->setButtonType(MIN_MAX_BUTTON);
