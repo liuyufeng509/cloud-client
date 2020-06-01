@@ -18,6 +18,8 @@ RCC_DIR = tmp
 MOC_DIR = tmp
 OBJECTS_DIR = tmp
 
+INCLUDEPATH += ./movie
+
 #lang
 TRANSLATIONS += lang/lang_zh_CN.ts\
                 lang/lang_en_US.ts
@@ -34,7 +36,9 @@ SOURCES += main.cpp\
     scale/cursorposcalculator.cpp \
     scale/frameless_helper.cpp \
     scale/widgetdata.cpp \
-    qflowlayout.cpp
+    qflowlayout.cpp \
+    movie/carouselimagewindow.cpp \
+    httpdownload/httppicdownload.cpp
 
 HEADERS  += \
     homewindow.h \
@@ -50,7 +54,9 @@ HEADERS  += \
     scale/frameless_helper.h \
     scale/widgetdata.h \
     common.h \
-    qflowlayout.h
+    qflowlayout.h \
+    movie/carouselimagewindow.h \
+    httpdownload/httppicdownload.h
 
 FORMS    += \
     vmwidget.ui \

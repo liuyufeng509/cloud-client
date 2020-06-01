@@ -18,7 +18,10 @@
     <normaloff>:/new/index/taskbar</normaloff>:/new/index/taskbar</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout">
+   <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0,1,3">
+    <property name="spacing">
+     <number>0</number>
+    </property>
     <property name="leftMargin">
      <number>0</number>
     </property>
@@ -31,10 +34,7 @@
     <property name="bottomMargin">
      <number>0</number>
     </property>
-    <property name="spacing">
-     <number>0</number>
-    </property>
-    <item row="0" column="0">
+    <item>
      <widget class="QWidget" name="widget" native="true">
       <property name="minimumSize">
        <size>
@@ -44,7 +44,7 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="0">
+    <item>
      <widget class="QWidget" name="infoWidget" native="true">
       <property name="minimumSize">
        <size>
@@ -101,7 +101,29 @@
       </layout>
      </widget>
     </item>
-    <item row="2" column="0">
+    <item>
+     <widget class="CarouselImageWindow" name="movieWidget" native="true">
+      <property name="styleSheet">
+       <string notr="true">QPushButton{
+    background-color:white;
+    border-style:outset;
+    border-width:1px;
+    border-color:rgb(10,45,110);
+    border-radius:8px;
+    min-width:6px;
+    min-height:6px;
+    max-width:6px;
+    max-height:6px;
+    padding:4px;
+}
+
+QPushButton:checked{
+background-color:gray;
+}</string>
+      </property>
+     </widget>
+    </item>
+    <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
        <number>0</number>
@@ -137,7 +159,7 @@
              <x>0</x>
              <y>0</y>
              <width>1042</width>
-             <height>540</height>
+             <height>398</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -216,6 +238,14 @@
    </layout>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CarouselImageWindow</class>
+   <extends>QWidget</extends>
+   <header>carouselimagewindow.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="resource.qrc"/>
  </resources>

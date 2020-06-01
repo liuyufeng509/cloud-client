@@ -102,7 +102,20 @@ QPushButton#logoutButton:pressed {
     background-color:#50a495;
 }
 
-
+/*中间按钮部分  不起作用，原因未知。
+QMainWindow#HomeWindow>QWidget#movieWidget>QPushButton#pushButton{
+    background-color:white;
+    border-style:outset;
+    border-width:1px;
+    border-color:rgb(10,45,110);
+    border-radius:13px;
+    min-width:16px;
+    min-height:16px;
+    max-width:16px;
+    max-height:16px;
+    padding:4px;
+}
+*/
 
 
 /*标题栏关闭按钮设置*/

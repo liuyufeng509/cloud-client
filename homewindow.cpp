@@ -31,6 +31,7 @@
 #include "detaildialog.h"
 #include "scale/frameless_helper.h"
 #include   "qflowlayout.h"
+#include "movie/carouselimagewindow.h"
 
 HomeWindow::HomeWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -46,7 +47,6 @@ HomeWindow::HomeWindow(QWidget *parent) :
     moveToCenter();
 
     //初始化语言
-
 //    LoginDialog dia(m_userInfo);
 //    if (QDialog::Accepted == dia.exec())
 //    {
@@ -115,6 +115,34 @@ HomeWindow::HomeWindow(QWidget *parent) :
     pHelper->setWidgetResizable(true);  //设置窗体可缩放
     pHelper->setRubberBandOnMove(true);  //设置橡皮筋效果-可移动
     pHelper->setRubberBandOnResize(true);  //设置橡皮筋效果-可缩放
+
+    m_picDown = new HttpPicDownLoad(this);
+
+    connect(m_picDown, &HttpPicDownLoad::alreadyDownload, this, &HomeWindow::addImage);
+
+    //幻灯片效果
+//    ui->movieWidget->addImage("C:\\Users\\Administrator\\Desktop\\test\\1.png");
+//    ui->movieWidget->addImage("C:\\Users\\Administrator\\Desktop\\test\\2.png");
+//    ui->movieWidget->addImage("C:\\Users\\Administrator\\Desktop\\test\\3.png");
+//    ui->movieWidget->startPlay();
+
+//    m_picDown->downLoadPic("http://c.runoob.com/wp-content/uploads/2017/01/img_fjords_wide.jpg");
+//    m_picDown->downLoadPic("http://c.runoob.com/wp-content/uploads/2017/01/img_nature_wide.jpg");
+//    m_picDown->downLoadPic("http://c.runoob.com/wp-content/uploads/2017/01/img_mountains_wide.jpg");
+//    m_picDown->addUrl("http://c.runoob.com/wp-content/uploads/2017/01/img_fjords_wide.jpg");
+//    m_picDown->addUrl("http://c.runoob.com/wp-content/uploads/2017/01/img_nature_wide.jpg");
+//    m_picDown->addUrl("http://c.runoob.com/wp-content/uploads/2017/01/img_mountains_wide.jpg");
+    m_picDown->addUrl("http://localhost/images/1.jpg");
+    m_picDown->addUrl("http://localhost/images/2.jpg");
+    m_picDown->addUrl("http://localhost/images/3.jpg");
+    m_picDown->downLoadPic();
+}
+
+void HomeWindow::addImage(QString path, int counter)
+{
+    ui->movieWidget->addImage(path);
+    if(counter==3)
+        ui->movieWidget->startPlay();
 
 }
 

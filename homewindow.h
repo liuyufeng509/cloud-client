@@ -8,6 +8,7 @@
 #include <QMainWindow>
 #include "worker.h"
 #include "waitdialog.h"
+#include "httpdownload/httppicdownload.h"
 #include<QThread>
 namespace Ui {
 class HomeWindow;
@@ -60,6 +61,8 @@ private slots:
 
     void on_updateButton_clicked();
 
+    void addImage(QString path, int counter);
+
 private:
     void moveToCenter();
 
@@ -87,6 +90,10 @@ private:
     QMenu *m_menu;
     QAction *operAction;
     QAction *detailAction;
+
+
+    //http图片下载
+    HttpPicDownLoad *m_picDown;
 public:
     QVector<VM_CONFIG> vmArray;
 
