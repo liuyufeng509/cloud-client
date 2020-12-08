@@ -38,7 +38,9 @@ SOURCES += main.cpp\
     scale/widgetdata.cpp \
     qflowlayout.cpp \
     movie/carouselimagewindow.cpp \
-    httpdownload/httppicdownload.cpp
+    httpdownload/httppicdownload.cpp \
+    qmessagehandles.cpp \
+    rdesktoptip.cpp
 
 HEADERS  += \
     homewindow.h \
@@ -56,13 +58,17 @@ HEADERS  += \
     common.h \
     qflowlayout.h \
     movie/carouselimagewindow.h \
-    httpdownload/httppicdownload.h
+    httpdownload/httppicdownload.h \
+    gwsdk.h \
+    qmessagehandles.h \
+    rdesktoptip.h
 
 FORMS    += \
     vmwidget.ui \
     logindialog.ui \
     homewindow.ui \
-    detaildialog.ui
+    detaildialog.ui \
+    rdesktoptip.ui
 
 RESOURCES += \
     resource.qrc

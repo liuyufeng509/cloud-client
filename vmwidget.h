@@ -1,4 +1,4 @@
-#ifndef VMWIDGET_H
+﻿#ifndef VMWIDGET_H
 #define VMWIDGET_H
 
 #include <QWidget>
@@ -18,14 +18,14 @@ class VMWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit VMWidget(VM_CONFIG &vm, QWidget *parent = 0);
+    explicit VMWidget(Service &vm, QWidget *parent = 0);
     ~VMWidget();
     void setStyleSheetByStatus();
 
     void setSvrIP(QString ip){worker->setSvrIP(ip);}
     void setUserInfo(UserInfo usr){worker->setUserInfo(usr);}
 signals:
-    void emitData(VM_CONFIG vm);
+    void emitData(Service vm);
 
 private slots:
     void on_VMButton_clicked();
@@ -35,7 +35,7 @@ private slots:
 
 private:
     Ui::VMWidget *ui;
-    VM_CONFIG &m_vm;
+    Service &m_vm;
 
     //context menu
     QMenu *m_menu;

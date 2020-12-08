@@ -1,4 +1,4 @@
-#ifndef WORKER_H
+﻿#ifndef WORKER_H
 #define WORKER_H
 
 #include <QObject>
@@ -25,7 +25,7 @@ public:
     bool needUpdate();
     bool update(QString &err);
 private:
-    bool Login(UserInfo  &userInfo);
+
 
     bool getVMs(QVector<VM_CONFIG> &vmArr, QString &vms);
     bool parseVMs(QVector<VM_CONFIG> &vmArr,QByteArray &ba);
@@ -37,10 +37,10 @@ private:
 
 
 signals:
-    void loginReady(bool success);
+
     void getAllInfoReady(bool success);
 public slots:
-    void doLogin(UserInfo &userinfo);
+    bool Login(UserInfo  &userInfo);
     void doGetAllInfo(QVector<VM_CONFIG> *vmArr, QString &vms);
 private:
 

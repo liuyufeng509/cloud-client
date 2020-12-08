@@ -1,8 +1,10 @@
-#include "homewindow.h"
+﻿#include "homewindow.h"
 #include <QApplication>
 #include <QFile>
 #include <QMutex>
 #include <iostream>
+#include"qmessagehandles.h"
+#include "rdesktoptip.h"
 using namespace std;
 //日志生成
 void LogMsgOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
@@ -66,6 +68,16 @@ int main(int argc, char *argv[])
     a.setStyleSheet(styleSheet);
     qss->close();
     qss->deleteLater();
+    if(!loadSDK())
+    {
+        QMessageBox::information(nullptr,"提示","加载sdk失败,进程退出！");
+        a.quit();
+    }
+
+    QObject::connect(QMessageHandles::instance(), &QMessageHandles::DeskTipMessage,
+            RDesktopTip::getInstance(),&RDesktopTip::showTip);
+
+
     HomeWindow w;
     w.show();
 

@@ -1,4 +1,4 @@
-#include <QDesktopWidget>
+﻿#include <QDesktopWidget>
 #include<QMessageBox>
 #include <qdebug.h>
 #include <QEvent>
@@ -8,7 +8,8 @@
 #include "logindialog.h"
 #include "ui_logindialog.h"
 #include <QRegExpValidator>
-
+#include "qmessagehandles.h"
+#include <QTimer>
 
 LoginDialog::LoginDialog(UserInfo &usrInfo, QWidget *parent) :
     QDialog(parent),
@@ -36,31 +37,11 @@ LoginDialog::LoginDialog(UserInfo &usrInfo, QWidget *parent) :
     worker->moveToThread(&workerThread);
     qRegisterMetaType<UserInfo> ("UserInfo &");
     connect(&workerThread, &QThread::finished, worker, &QObject::deleteLater);
-    connect(this, &LoginDialog::operate, worker, &Worker::doLogin);
-    connect(worker, &Worker::loginReady, this, &LoginDialog::handleLoginRes);
+    connect(this, &LoginDialog::operate, worker, &Worker::Login);
+    connect(QMessageHandles::instance(), &QMessageHandles::loginReady, this, &LoginDialog::handleLoginRes);
     workerThread.start();
 }
 
-bool LoginDialog::Login()
-{
-    QString cmd = "/usr/bin/getLoginStatus.py "+m_userInfo.uname+" "+m_userInfo.pwd+" "+serverIP + " 2>&1";
-    QString res = GetCmdRes(cmd).trimmed();
-    QStringList list = res.split('\n');
-    if(list.size()<1)
-    {
-        qDebug()<<tr("Login failed: printed info nums less than 2");
-        return false;
-    }
-    if(list.first()=="login success")
-    {
-        m_userInfo.uid = list.last();
-        return true;
-    }else
-    {
-        m_userInfo.uid = "";
-        return false;
-    }
-}
 
 LoginDialog::~LoginDialog()
 {
@@ -100,10 +81,15 @@ void LoginDialog::on_loginPushButton_clicked()
 {
     int pos = 0;
     this->serverIP = ui->serverLineEdit->text();
+    m_userInfo.ip = ui->serverLineEdit->text();
+    m_userInfo.port = ui->portLineEdit->text();
     m_userInfo.uname = ui->usernameLineEdit->text();
     m_userInfo.pwd=ui->passwdLineEdit->text();
+    m_userInfo.otp = ui->otpLineEdit->text();
 
-    if(this->serverIP.isEmpty())
+
+    //ip合法性判断
+    if(m_userInfo.ip.isEmpty())
     {
         ui->serverLineEdit->setFocus();
         ui->serverLineEdit->setCursorPosition(ui->serverLineEdit->text().length());
@@ -111,7 +97,7 @@ void LoginDialog::on_loginPushButton_clicked()
         return;
     }
 
-    if(ui->serverLineEdit->validator()->validate(this->serverIP, pos) != QValidator::Acceptable)
+    if(ui->serverLineEdit->validator()->validate(m_userInfo.ip, pos) != QValidator::Acceptable)
     {
         ui->serverLineEdit->setFocus();
         ui->serverLineEdit->setCursorPosition(ui->serverLineEdit->text().length());
@@ -121,6 +107,18 @@ void LoginDialog::on_loginPushButton_clicked()
 
     ui->serverLineEdit->setStyleSheet("background-color: white;");
 
+    //端口号合法性判断
+    if (m_userInfo.port.isEmpty())
+    {
+        ui->portLineEdit->setFocus();
+        ui->portLineEdit->setCursorPosition(ui->portLineEdit->text().length());
+        ui->portLineEdit->setStyleSheet("background-color: yellow;");
+        return;
+    }
+
+    ui->portLineEdit->setStyleSheet("background-color: white;");
+
+    //用户名合法性判断
     if (m_userInfo.uname.isEmpty())
     {
         ui->usernameLineEdit->setFocus();
@@ -131,6 +129,7 @@ void LoginDialog::on_loginPushButton_clicked()
 
     ui->usernameLineEdit->setStyleSheet("background-color: white;");
 
+    //密码合法性判断
     if(m_userInfo.pwd.isEmpty())
     {
         ui->passwdLineEdit->setFocus();
@@ -138,18 +137,31 @@ void LoginDialog::on_loginPushButton_clicked()
         ui->passwdLineEdit->setStyleSheet("background-color: yellow;");
         return;
     }
-
     ui->passwdLineEdit->setStyleSheet("background-color: white;");
-    worker->setSvrIP(serverIP);
+
+    //动态口令合法性判断
+    if(m_userInfo.otp.isEmpty())
+    {
+        ui->otpLineEdit->setFocus();
+        ui->otpLineEdit->setCursorPosition(ui->otpLineEdit->text().length());
+        ui->otpLineEdit->setStyleSheet("background-color: yellow;");
+        return;
+    }
+    ui->passwdLineEdit->setStyleSheet("background-color: white;");
+
+    //worker->setSvrIP(serverIP);
+    QTimer::singleShot(5000, this, SLOT(loginTimeOut()));
     emit operate(m_userInfo);
     waitDiaogAppear();
-//    if(Login())
-//        accept();
-//    else
-//        QMessageBox::warning(this, "警告", "登录失败,请确认用户名和密码无误");
 }
 
-void LoginDialog::handleLoginRes(bool success)
+void LoginDialog::loginTimeOut()
+{
+    waitDialogAccept();
+    QMessageBox::warning(this, "警告", "登录超时，请检查网络连接");
+}
+
+void LoginDialog::handleLoginRes(bool success,QString errInfo)
 {
     waitDialogAccept();
     if(success)
@@ -157,7 +169,7 @@ void LoginDialog::handleLoginRes(bool success)
         accept();
     }else
     {
-        QMessageBox::warning(this, "警告", "登录失败,请确认用户名和密码无误");
+        QMessageBox::warning(this, "警告", errInfo);
     }
 }
 
@@ -174,8 +186,12 @@ void LoginDialog::moveToCenter()
 
 void LoginDialog::waitDialogAccept()
 {
-    waitD->accept();
-    delete waitD;
+    if(waitD!=nullptr)
+    {
+        waitD->accept();
+        waitD->deleteLater();
+        waitD = nullptr;
+    }
 }
 
 void LoginDialog::waitDiaogAppear()

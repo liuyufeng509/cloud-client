@@ -1,4 +1,4 @@
-#ifndef HOMEWINDOW_H
+﻿#ifndef HOMEWINDOW_H
 #define HOMEWINDOW_H
 
 #include <QWidget>
@@ -47,7 +47,7 @@ private slots:
     void onButtonMaxClicked();
     void onButtonCloseClicked();
 
-    void openVm(VM_CONFIG vm);
+    void openVm(Service vm);
     void openVmOfTable(int row, int column);
     void handleGetAllInfoRes(bool success);
     void on_freshButton_clicked();
@@ -62,6 +62,10 @@ private slots:
     void on_updateButton_clicked();
 
     void addImage(QString path, int counter);
+
+    void getAllServices(QString serviceList);
+
+    void UpdateServciesList(QString services);
 
 private:
     void moveToCenter();
@@ -96,6 +100,8 @@ private:
     HttpPicDownLoad *m_picDown;
 public:
     QVector<VM_CONFIG> vmArray;
+
+    QList<Service> servicesList;
 
 
     int minWidth=700;

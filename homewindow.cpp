@@ -1,4 +1,4 @@
-#include "homewindow.h"
+﻿#include "homewindow.h"
 #include "ui_homewindow.h"
 #include <QSettings>
 #include <QFile>
@@ -32,6 +32,7 @@
 #include "scale/frameless_helper.h"
 #include   "qflowlayout.h"
 #include "movie/carouselimagewindow.h"
+#include "qmessagehandles.h"
 
 HomeWindow::HomeWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -46,34 +47,21 @@ HomeWindow::HomeWindow(QWidget *parent) :
 
     moveToCenter();
 
-    //初始化语言
-//    LoginDialog dia(m_userInfo);
-//    if (QDialog::Accepted == dia.exec())
-//    {
-//        this->serverIp = dia.getServerIP();
-//        qDebug() << this->serverIp << endl;
-//        ui->label->setText("<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; color:#458b67;\">你好，"+m_userInfo.uname+"，欢迎使用方德云客户端！</span></p></body></html>");
-//    }
-//    else
-//    {
-//        exit(1);
-//    }
-
     //thread
     worker = new Worker;
     worker->moveToThread(&workerThread);
     qRegisterMetaType<VMVECTOR> ("QVector<VM_CONFIG> *");
     qRegisterMetaType<QString> ("QString &");
     connect(&workerThread, &QThread::finished, worker, &QObject::deleteLater);
-    connect(this, &HomeWindow::getAllInfo, worker, &Worker::doGetAllInfo);
+    //connect(this, &HomeWindow::getAllInfo, worker, &Worker::doGetAllInfo);
     connect(worker, &Worker::getAllInfoReady, this, &HomeWindow::handleGetAllInfoRes);
     workerThread.start();
 
     //get vms
     worker->setSvrIP(serverIp);
     worker->setUserInfo(m_userInfo);
-    emit getAllInfo(&vmArray,vms);
-    waitDiaogAppear();
+//    emit getAllInfo(&vmArray,vms);
+//    waitDiaogAppear();
 
     //initUI
     initTitleBar();
@@ -136,6 +124,116 @@ HomeWindow::HomeWindow(QWidget *parent) :
     m_picDown->addUrl("http://localhost/images/2.jpg");
     m_picDown->addUrl("http://localhost/images/3.jpg");
     m_picDown->downLoadPic();
+
+
+    //服务列表
+    connect(QMessageHandles::instance(), &QMessageHandles::servicesList, this, &HomeWindow::getAllServices);
+    connect(QMessageHandles::instance(), &QMessageHandles::UpdateServciesList, this, &HomeWindow::UpdateServciesList);
+
+    //初始化语言
+    LoginDialog dia(m_userInfo);
+    if (QDialog::Accepted == dia.exec())
+    {
+        this->serverIp = dia.getServerIP();
+        qDebug() << this->serverIp << endl;
+        ui->label->setText("<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; color:#458b67;\">你好，"+m_userInfo.uname+"，欢迎中车VPN客户端！</span></p></body></html>");
+    }
+    else
+    {
+        exit(1);
+    }
+}
+
+void HomeWindow::UpdateServciesList(QString services)
+{
+    //evtID:237, szPraram:{"rspID":237,"rspMsg":{"RawMsg":"-GroupListEnd- 5\t ftp_5\t 0\t 1\t 0\t 0\t 0\t 3\t \t ftp_5,192.168.70.5,192.168.70.5,192.168.70.5,192.168.70.5\n 1\t 统一运维平台\t 0\t 1\t 0\t 0\t 0\t 1\t \t 统一运维平台,10.20.0.231,10.20.0.231,10.20.0.231,10.20.0.231\n 2\t 重庆地铁智能运维系统\t 0\t 1\t 0\t 0\t 0\t 1\t \t 重庆地铁智能运维系统,192.168.71.10,192.168.71.10,192.168.71.10,192.168.71.10\n 6\t ftp_12\t 0\t 1\t 0\t 0\t 0\t 3\t \t ftp_12,192.168.70.12,192.168.70.12,192.168.70.12,192.168.70.12\n 3\t nginx代理-重庆\t 0\t 1\t 0\t 0\t 0\t 1\t \t nginx代理-重庆,192.168.70.5,192.168.70.5,192.168.70.5,192.168.70.5"}}
+    QJsonParseError err_rpt;
+    QJsonDocument  root_Doc = QJsonDocument::fromJson(services.toUtf8(), &err_rpt);//字符串格式化为JSON
+    if(err_rpt.error != QJsonParseError::NoError)
+    {
+        qDebug()<<"服务详细信息json串解析失败："<<err_rpt.errorString();
+        return;
+    }else {
+
+        QJsonObject root_Obj = root_Doc.object();
+        QJsonObject rspMsg_Value = root_Obj.value("rspMsg").toObject();
+        QString  rawMsg = rspMsg_Value.value("RawMsg").toString();
+        rawMsg.replace("-GroupListEnd-","");
+        QStringList serList = rawMsg.split("\n");
+        for(int i=0;i<serList.count();i++)
+        {
+            QString serv = serList.at(i);
+            QStringList infoList = serv.split("\t");
+            if(infoList.size()!=10)
+            {
+                continue;
+            }
+
+            int id = infoList.at(0).trimmed().toInt();
+            QString displayName = infoList.at(1).trimmed();
+            int accessType = infoList.at(3).trimmed().toInt();
+            int servType = infoList.at(7).trimmed().toInt();
+            QString content = infoList.at(9).trimmed();
+            QStringList sl = content.split(",");
+            if(sl.size()<2)
+            {
+                continue;
+            }
+            QString ip =sl.at(1).trimmed();
+
+            //找到对应的服务，更新信息
+            for(int j=0;j<servicesList.size();j++)
+            {
+                if(servicesList[j].id==id && servicesList[j].displayName==displayName&&
+                   servicesList[j].accessType == accessType && servicesList[j].servType==servType)
+                {
+                    servicesList[j].ip = ip;
+                    break;
+                }
+            }
+
+        }
+    }
+
+    updateViewUI();
+}
+
+void HomeWindow::getAllServices(QString serviceList)
+{
+    //evtID:208, szPraram:{"rspID":208,"rspMsg":{"ServiceCount":5,"ServiceList":[{"AccessType":1,"DisplayName":"ftp_5","ID":5,"ServType":3},{"AccessType":1,"DisplayName":"统一运维平台","ID":1,"ServType":1},{"AccessType":1,"DisplayName":"重庆地铁智能运维系统","ID":2,"ServType":1},{"AccessType":1,"DisplayName":"ftp_12","ID":6,"ServType":3},{"AccessType":1,"DisplayName":"nginx代理-重庆","ID":3,"ServType":1}]}}
+
+    QJsonParseError err_rpt;
+    QJsonDocument  root_Doc = QJsonDocument::fromJson(serviceList.toUtf8(), &err_rpt);//字符串格式化为JSON
+    if(err_rpt.error != QJsonParseError::NoError)
+    {
+        qDebug()<<"服务列表json串解析失败："<<err_rpt.errorString();
+        return;
+    }else {
+
+        QJsonObject root_Obj = root_Doc.object();
+        QJsonObject rspMsg_Value = root_Obj.value("rspMsg").toObject();
+        int serviceCount = rspMsg_Value.value("ServiceCount").toInt();
+        QJsonArray servicelist_value = rspMsg_Value.value("ServiceList").toArray();
+        if(servicelist_value.size()!=serviceCount)
+        {
+            qDebug()<<"解析的servicecount与数组大小不一致";
+            return;
+        }
+        servicesList.clear();
+        for(int i=0; i<serviceCount;i++)
+        {
+            QJsonObject server_obj = servicelist_value.at(i).toObject();
+            Service serv;
+            serv.accessType = server_obj.value("AccessType").toInt();
+            serv.displayName = server_obj.value("DisplayName").toString();
+            serv.id = server_obj.value("ID").toInt();
+            serv.servType = server_obj.value("ServType").toInt();
+            servicesList.append(serv);
+        }
+
+    }
+
+    updateViewUI();
 }
 
 void HomeWindow::addImage(QString path, int counter)
@@ -284,16 +382,13 @@ void HomeWindow::updateViewUI()
     //clearLayout(ui->vmsGridLayout);
     clearLayout(m_flowLayout);
     //计算每行放几个vm
-
-    for(int i=0; i<vmArray.size(); i++)
+    for(int i=0; i<servicesList.size(); i++)
    {
-       VMWidget *vm = new VMWidget(vmArray[i],this);
+       VMWidget *vm = new VMWidget(servicesList[i],this);
        int k = this->width()/vm->width();
-        vm->setSvrIP(serverIp);
-        vm->setUserInfo(m_userInfo);
        //ui->vmsGridLayout->addWidget(vm, i/k, i%k);
         m_flowLayout->addWidget(vm);
-       connect(vm, &VMWidget::emitData, this, &HomeWindow::openVm);
+        connect(vm, &VMWidget::emitData, this, &HomeWindow::openVm);
    }
 }
 
@@ -305,18 +400,12 @@ void HomeWindow::openVmOfTable(int row, int column)
         return;
     }
 
-    openVm(vmArray[row]);
+    //openVm(vmArray[row]);
 }
 
-void HomeWindow::openVm(VM_CONFIG vm)
+void HomeWindow::openVm(Service vm)
 {
-    if(vm.status!=RUNING)
-    {
-        QMessageBox::information(this, "提示","该虚拟主机不在线");
-        return;
-    }
-    QString cmd = QString("%1 spice://%2:%3 --full-screen  &").arg("/usr/bin/remote-viewer").arg(vm.ip).arg(vm.port);
-    GetCmdRes(cmd);
+    qDebug()<<"服务的ip:"<<vm.displayName<<" "<<vm.ip;
 }
 
 void HomeWindow::initTitleBar()

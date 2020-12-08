@@ -1,4 +1,4 @@
-#ifndef LOGINDIALOG_H
+﻿#ifndef LOGINDIALOG_H
 #define LOGINDIALOG_H
 #include"common.h"
 #include <QDialog>
@@ -21,7 +21,6 @@ public:
         return serverIP;
     }
 
-    bool Login();
 
 protected:
     void mouseReleaseEvent(QMouseEvent *event);
@@ -32,7 +31,9 @@ private slots:
     void on_loginPushButton_clicked();
     void on_quitPushButton_clicked();
 
-    void handleLoginRes(bool success);
+    void handleLoginRes(bool success,QString errInfo);
+
+    void loginTimeOut();
 
 signals:
     void operate(UserInfo &userinfo);
@@ -49,7 +50,7 @@ private:
     // user info
     UserInfo  &m_userInfo;
 
-    WaitDialog *waitD;
+    WaitDialog *waitD=nullptr;
     QThread workerThread;
     Worker *worker;
 };

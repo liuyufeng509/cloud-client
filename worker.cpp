@@ -1,4 +1,4 @@
-#include "worker.h"
+﻿#include "worker.h"
 #include <QtScript/QtScript>
 #include "3rd/json/json/json.h"
 #include <QJsonParseError>
@@ -11,31 +11,34 @@ Worker::Worker(QObject *parent) : QObject(parent)
 {
 
 }
-//login
-void Worker::doLogin(UserInfo &userinfo)
-{
-        emit loginReady(Login(userinfo));
-}
 
 bool Worker::Login(UserInfo  &userInfo)
 {
-    QString cmd = "/usr/bin/getLoginStatus.py "+userInfo.uname+" "+userInfo.pwd+" "+serverIp + " 2>&1";
-    QString res = GetCmdRes(cmd).trimmed();
-    QStringList list = res.split('\n');
-    if(list.size()<1)
-    {
-        qDebug()<<tr("Login failed: printed info nums less than 2");
-        return false;
-    }
-    if(list.first()=="login success")
-    {
-        userInfo.uid = list.last();
-        return true;
-    }else
-    {
-        userInfo.uid = "";
-        return false;
-    }
+    //调用登录接口。
+    char errmsg[1024];
+    int errmsgLen = 1024;
+
+
+    SUBAUTH_CONTENT content;
+    content.typeSubAuth = TypeOTP;
+    memset(content.szOTP, 0,sizeof(content.szOTP));
+    QByteArray data = userInfo.otp.toLocal8Bit();
+    memcpy_s(content.szOTP, sizeof(content.szOTP), data.data(),data.size());
+
+    QString loginUrl = "https://"+userInfo.ip+":"+userInfo.port;
+
+    LoginStatus stat = funcLoginSslVpnEx(
+        loginUrl.toStdString().c_str(),
+        userInfo.uname.toStdString().c_str(),
+        userInfo.pwd.toStdString().c_str(),
+        0,
+        errmsg,
+        errmsgLen,
+        funcEventCB,
+        EVENTID_SERVICELIST,
+        NULL,
+        (char*)&content
+    );
 }
 
 

@@ -1,4 +1,4 @@
-#include "widgetdata.h"
+﻿#include "widgetdata.h"
 #include "frameless_helper.h"
 #include <QMouseEvent>
 #include <QtDebug>
@@ -285,8 +285,8 @@ void WidgetData::handleMouseMoveEvent(QMouseEvent *event)
 
     if (m_bLeftButtonPressed)
     {
-        qDebug()<<"m_bWidgetResizable:"<<d->m_bWidgetResizable
-               <<" m_bOnEdges:"<<m_pressedMousePos.m_bOnEdges;
+//        qDebug()<<"m_bWidgetResizable:"<<d->m_bWidgetResizable
+//               <<" m_bOnEdges:"<<m_pressedMousePos.m_bOnEdges;
         if (d->m_bWidgetResizable && m_pressedMousePos.m_bOnEdges)
         {
             resizeWidget(event->globalPos());
