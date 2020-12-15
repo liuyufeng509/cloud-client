@@ -13,6 +13,7 @@ public:
     void ReceiveMassage(const uint dwContext, const uint evtID, const QString param);
 private:
     explicit QMessageHandles(QObject *parent = nullptr);
+    void showTip(QStringList sl, int timeout);
 
     static QMessageHandles* s_inst;
 

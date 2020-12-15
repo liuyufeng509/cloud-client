@@ -7,6 +7,7 @@
 #include<QMessageBox>
 #include"gwsdk.h"
 #include <Windows.h>
+#include <QIcon>
 
 struct  UserInfo//登陆窗口结构体
 {
@@ -24,6 +25,41 @@ struct Service
     int id;
     int servType;
     QString ip;
+    QString url;
+    QString imageUrl;
+    QIcon icon;
+
+    void getUrlandIcon()
+    {
+        switch (servType) {
+        case 1:
+            url = "http://"+ip+":80";
+            imageUrl = ":/new/vpn/services/http";
+            icon.addFile(":/new/vpn/services/http");
+
+            return;
+        case 2:
+            url = "https://"+ip+":443";
+            imageUrl = ":/new/vpn/services/https";
+            icon.addFile(":/new/vpn/services/https");
+            return;
+        case 3:
+            url = "ftp://"+ip+":21";
+            imageUrl = ":/new/vpn/services/ftp";
+            icon.addFile(":/new/vpn/services/ftp");
+            return;
+        case 4:
+            url = "telnet "+ip +":23";
+            return;
+        case 5:
+            url = "ssh "+ip +":22";
+            return;
+        case 14:
+            url = "tftp://"+ip+":69";
+            return;
+
+        }
+    }
 };
 
 enum STAT

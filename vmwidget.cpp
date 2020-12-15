@@ -3,6 +3,8 @@
 #include "detaildialog.h"
 #include "homewindow.h"
 #include<unistd.h>
+#include<QIcon>
+#include "setapprelationdialog.h"
 VMWidget::VMWidget(Service &vm,QWidget *parent) :
     QWidget(parent),
     m_vm(vm),
@@ -15,20 +17,14 @@ VMWidget::VMWidget(Service &vm,QWidget *parent) :
     ui->label_vmName->setText(m_vm.displayName);
     ui->VMButton->setContextMenuPolicy(Qt::CustomContextMenu);
     m_menu = new QMenu(this);
-    operAction = new QAction(this);
-    detailAction = new QAction(this);
-    detailAction->setText(tr("详细信息"));
-//    if(m_vm.status == RUNING)
-//    {
-//        operAction->setText(tr("关机"));
-//    }else
-//        operAction->setText(tr("开机"));
+    setAction = new QAction( QIcon(":/new/vpn/set"),"设置启动程序",this);
+    exportAction = new QAction(QIcon(":/new/vpn/export"),"创建快捷方式",this);
 
-    connect(operAction, SIGNAL(triggered()), this, SLOT(operateActionSlot()));
-    connect(detailAction, SIGNAL(triggered()), this, SLOT(detailActionSlot()));
+    connect(setAction, SIGNAL(triggered()), this, SLOT(operateActionSlot()));
+    connect(exportAction, SIGNAL(triggered()), this, SLOT(detailActionSlot()));
 
-    m_menu->addAction(operAction);
-    m_menu->addAction(detailAction);
+    m_menu->addAction(setAction);
+    m_menu->addAction(exportAction);
 
     connect(ui->VMButton, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(showMenu(const QPoint&)));
 
@@ -39,81 +35,50 @@ VMWidget::VMWidget(Service &vm,QWidget *parent) :
 void VMWidget::operateActionSlot()
 {
     //startup or shutdown
-//    if(worker->operateVMs(m_vm.vid,&m_vm.status))
-//        QMessageBox::information(NULL, "提示","开关机操作成功");
-//    setStyleSheetByStatus();
-//    HomeWindow *hw = static_cast<HomeWindow *>(prt);
-//    sleep(2);
-//    worker->getVMsIpPort(hw->vmArray);
-//    hw->updatetableUI();
+    SetAppRelationDialog dlg(this);
+    dlg.exec();
+
 }
 
 void VMWidget::detailActionSlot()
 {
-    //detail info
-//    DetailDialog dlg(m_vm);
-//    dlg.exec();
+    //快捷方式
+    /* *.url
+     * [InternetShortcut]
+URL=http://Kennytian.cnblogs.com
+     * */
 }
 
 void VMWidget::showMenu(const QPoint &point)
 {
-//    if(m_vm.status == RUNING)
-//    {
-//        operAction->setText(tr("关机"));
-//    }else
-//        operAction->setText(tr("开机"));
-//    m_menu->exec(mapToGlobal(point));
+    m_menu->exec(mapToGlobal(point));
 }
 
 void VMWidget::setStyleSheetByStatus()
 {
-    if(1)
-    {
-        setStyleSheet(" QPushButton {  \
-                          border: none; \
-                          border-radius: 0px;   \
-                          color:white;  \
-                          font-weight:bold; \
-                          image: url(:/new/index/run_namal);   \
-                      } \
-                      QPushButton:hover { \
-                          border: 1px solid white; \
-                          border-radius: 0px; \
-                          color:white; \
-                          font-weight:normal; \
-                          image: url(:/new/index/run_namal_hover); \
-                      } \
-                      QPushButton:pressed { \
-                          border: 1px solid white; \
-                          border-radius: 0px; \
-                          color:white; \
-                          font-weight:bold; \
-                          image: url(:/new/index/run_namal_press); \
-                      }");
-    }else
-    {
-        setStyleSheet(" QPushButton {  \
-                  border: none; \
-                  border-radius: 0px;   \
-                  color:white;  \
-                  font-weight:bold; \
-                  image: url(:/new/index/down_namal);   \
-              } \
-              QPushButton:hover { \
-                  border: 1px solid white; \
-                  border-radius: 0px; \
-                  color:white; \
-                  font-weight:normal; \
-                  image: url(:/new/index/down_namal_hover); \
-              } \
-              QPushButton:pressed { \
-                  border: 1px solid white; \
-                  border-radius: 0px; \
-                  color:white; \
-                  font-weight:bold; \
-                  image: url(:/new/index/down_namal_press); \
-              }");
-    }
+    m_vm.getUrlandIcon();
+    setStyleSheet(" QPushButton {  \
+                      border: none; \
+                      border-radius: 0px;   \
+                      color:white;  \
+                      font-weight:bold; \
+                      image: url("+m_vm.imageUrl+");   \
+                  } \
+                  QPushButton:hover { \
+                      border: 1px solid white; \
+                      border-radius: 0px; \
+                      color:white; \
+                      font-weight:normal; \
+                      image: url("+m_vm.imageUrl+"); \
+                  } \
+                  QPushButton:pressed { \
+                      border: 1px solid white; \
+                      border-radius: 0px; \
+                      color:white; \
+                        opacity:0.4; \
+                      font-weight:bold; \
+                      image: url(/*"+m_vm.imageUrl+"*/); \
+                  }");
 
 }
 

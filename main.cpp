@@ -74,8 +74,7 @@ int main(int argc, char *argv[])
         a.quit();
     }
 
-    QObject::connect(QMessageHandles::instance(), &QMessageHandles::DeskTipMessage,
-            RDesktopTip::getInstance(),&RDesktopTip::showTip);
+
 
 
     HomeWindow w;

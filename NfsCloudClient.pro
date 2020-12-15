@@ -40,7 +40,8 @@ SOURCES += main.cpp\
     movie/carouselimagewindow.cpp \
     httpdownload/httppicdownload.cpp \
     qmessagehandles.cpp \
-    rdesktoptip.cpp
+    rdesktoptip.cpp \
+    setapprelationdialog.cpp
 
 HEADERS  += \
     homewindow.h \
@@ -61,14 +62,16 @@ HEADERS  += \
     httpdownload/httppicdownload.h \
     gwsdk.h \
     qmessagehandles.h \
-    rdesktoptip.h
+    rdesktoptip.h \
+    setapprelationdialog.h
 
 FORMS    += \
     vmwidget.ui \
     logindialog.ui \
     homewindow.ui \
     detaildialog.ui \
-    rdesktoptip.ui
+    rdesktoptip.ui \
+    setapprelationdialog.ui
 
 RESOURCES += \
     resource.qrc

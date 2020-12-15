@@ -33,7 +33,8 @@
 #include   "qflowlayout.h"
 #include "movie/carouselimagewindow.h"
 #include "qmessagehandles.h"
-
+#include <QDesktopServices>
+#include "rdesktoptip.h"
 HomeWindow::HomeWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::HomeWindow)
@@ -46,6 +47,10 @@ HomeWindow::HomeWindow(QWidget *parent) :
     ui->vmsWidget->setLayout(m_flowLayout);
 
     moveToCenter();
+
+    connect(QMessageHandles::instance(), &QMessageHandles::DeskTipMessage,this,[=](QStringList sl, int timeout){
+        RDesktopTip::showTip(sl, timeout);
+    });
 
     //thread
     worker = new Worker;
@@ -405,7 +410,10 @@ void HomeWindow::openVmOfTable(int row, int column)
 
 void HomeWindow::openVm(Service vm)
 {
-    qDebug()<<"服务的ip:"<<vm.displayName<<" "<<vm.ip;
+   // qDebug()<<"服务的ip:"<<vm.displayName<<" "<<vm.ip;
+    vm.getUrlandIcon();
+    QDesktopServices::openUrl(QUrl(vm.url));
+
 }
 
 void HomeWindow::initTitleBar()
@@ -523,6 +531,7 @@ void HomeWindow::on_freshButton_clicked()
 
 void HomeWindow::on_logoutButton_clicked()
 {
+    LogoutStatus stat = funcLogoutSslVpn();
     exit(0);
 }
 

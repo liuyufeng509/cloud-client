@@ -33,5 +33,12 @@
     </qresource>
     <qresource prefix="/new/vpn">
         <file alias="vpnlogo">image/logo.png</file>
+        <file alias="set">image/set.png</file>
+        <file alias="export">image/export.png</file>
+    </qresource>
+    <qresource prefix="/new/vpn/services">
+        <file alias="ftp">image/services/ftp.png</file>
+        <file alias="http">image/services/http.png</file>
+        <file alias="https">image/services/https.png</file>
     </qresource>
 </RCC>

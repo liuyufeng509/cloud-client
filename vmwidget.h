@@ -39,8 +39,8 @@ private:
 
     //context menu
     QMenu *m_menu;
-    QAction *operAction;
-    QAction *detailAction;
+    QAction *setAction;
+    QAction *exportAction;
     Worker *worker;
 
     QWidget *prt;
