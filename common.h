@@ -28,6 +28,11 @@ struct Service
     QString url;
     QString imageUrl;
     QIcon icon;
+    QString appUrl;
+    QString arg;
+
+    bool operator== (const Service& ar) const
+    { return accessType== ar.accessType && displayName==ar.displayName && id==ar.id && servType==ar.servType;}
 
     void getUrlandIcon()
     {

@@ -4,7 +4,9 @@
 #include "homewindow.h"
 #include<unistd.h>
 #include<QIcon>
+#include<QFile>
 #include "setapprelationdialog.h"
+#include<QStandardPaths>
 VMWidget::VMWidget(Service &vm,QWidget *parent) :
     QWidget(parent),
     m_vm(vm),
@@ -35,7 +37,7 @@ VMWidget::VMWidget(Service &vm,QWidget *parent) :
 void VMWidget::operateActionSlot()
 {
     //startup or shutdown
-    SetAppRelationDialog dlg(this);
+    SetAppRelationDialog dlg(m_vm,this);
     dlg.exec();
 
 }
@@ -47,6 +49,22 @@ void VMWidget::detailActionSlot()
      * [InternetShortcut]
 URL=http://Kennytian.cnblogs.com
      * */
+    QString location = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
+    QString filename = location+"/"+m_vm.displayName+".url";
+    QFile file(filename);
+    if(file.open(QFile::WriteOnly))
+    {
+        QTextStream ts(&file);
+        ts<<"[InternetShortcut]"<<"\n";
+        ts<<"URL="+m_vm.url<<"\n";
+        ts<<"IconIndex=0"<<"\n";
+        ts<<"HotKey=0"<<"\n";
+        ts<<"IDList="<<"\n";
+        ts<<"IconFile="+qApp->applicationFilePath()<<"\n";
+        ts<<"[{000214A0-0000-0000-C000-000000000046}]"<<"\n";
+        ts<<"Prop3=19,1"<<"\n";
+        file.close();
+    }
 }
 
 void VMWidget::showMenu(const QPoint &point)
@@ -89,5 +107,33 @@ VMWidget::~VMWidget()
 
 void VMWidget::on_VMButton_clicked()
 {
+    QString path = QApplication::applicationDirPath();
+    path = path + QString("/")+ QString("servs");
+    QFile file(path);
+    if(file.open(QFile::ReadOnly))
+    {
+        QString res = file.readAll();
+        QStringList sl = res.split('\n');
+        for(int i=0;i<sl.size();i++)
+        {
+            QStringList servs = sl[i].split('#');
+            if(servs.size()!=6)
+                continue;
+            Service s;
+            s.accessType = servs[0].toInt();
+            s.displayName=servs[1];
+            s.id = servs[2].toInt();
+            s.servType = servs[3].toInt();
+            s.appUrl=servs[4];
+            s.arg = servs[5];
+
+            if(s==m_vm)
+            {
+                m_vm.appUrl = s.appUrl;
+                m_vm.arg = s.arg;
+            }
+        }
+        file.close();
+    }
     emit emitData(m_vm);
 }

@@ -8,6 +8,7 @@ QT       += core gui network script
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+RC_FILE += app.rc
 
 #target folder
 TARGET = cdos-desktop-cloud 
@@ -80,4 +81,5 @@ RESOURCES += \
 CONFIG += static
 QMAKE_CXXFLAGS_DEBUG += -std=c++11 -static-libgcc 
 QMAKE_CXXFLAGS_RELEASE += -std=c++11 -static-libgcc 
-DISTFILES +=
+DISTFILES += \
+    app.rc

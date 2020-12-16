@@ -2,7 +2,8 @@
 #define SETAPPRELATIONDIALOG_H
 
 #include <QDialog>
-
+#include"common.h"
+class QSettings;
 namespace Ui {
 class SetAppRelationDialog;
 }
@@ -12,7 +13,7 @@ class SetAppRelationDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit SetAppRelationDialog(QWidget *parent = nullptr);
+    explicit SetAppRelationDialog(Service & serv,QWidget *parent = nullptr);
     ~SetAppRelationDialog();
 
 private slots:
@@ -24,6 +25,9 @@ private slots:
 
 private:
     Ui::SetAppRelationDialog *ui;
+    QString appName;
+    Service &m_serv;
+    QList<Service> m_servs;
 };
 
 #endif // SETAPPRELATIONDIALOG_H

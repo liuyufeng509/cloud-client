@@ -35,6 +35,8 @@
 #include "qmessagehandles.h"
 #include <QDesktopServices>
 #include "rdesktoptip.h"
+#include <QProcess>
+
 HomeWindow::HomeWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::HomeWindow)
@@ -412,7 +414,19 @@ void HomeWindow::openVm(Service vm)
 {
    // qDebug()<<"服务的ip:"<<vm.displayName<<" "<<vm.ip;
     vm.getUrlandIcon();
-    QDesktopServices::openUrl(QUrl(vm.url));
+    if(vm.appUrl.isEmpty())
+        QDesktopServices::openUrl(QUrl(vm.url));
+    else{
+        QString path=vm.appUrl;
+        if(vm.arg=="%S")
+        {
+            path = "\""+path+"\""+ " "+vm.url;
+        }else {
+           path = "\""+path+"\""+" "+vm.url +" "+vm.arg;
+        }
+        QProcess process;
+        process.startDetached(path);
+    }
 
 }
 
