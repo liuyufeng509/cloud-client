@@ -35,6 +35,31 @@
         <file alias="vpnlogo">image/logo.png</file>
         <file alias="set">image/set.png</file>
         <file alias="export">image/export.png</file>
+        <file alias="midlogo">image/midlogo.png</file>
+        <file>image/vpnimage/logo.png</file>
+        <file>image/vpnimage/车辆段工艺设备远程监控系统-formal.png</file>
+        <file>image/vpnimage/车辆段工艺设备远程监控系统-press.png</file>
+        <file>image/vpnimage/车辆数据管理平台-formal.png</file>
+        <file>image/vpnimage/车辆数据管理平台-press.png</file>
+        <file>image/vpnimage/底图.png</file>
+        <file>image/vpnimage/关闭.png</file>
+        <file>image/vpnimage/轨旁检测系统-formal.png</file>
+        <file>image/vpnimage/轨旁检测系统-press.png</file>
+        <file>image/vpnimage/架大修信息化系统-formal.png</file>
+        <file>image/vpnimage/架大修信息化系统-press.png</file>
+        <file alias="list">image/vpnimage/列表-formal.png</file>
+        <file alias="listselected">image/vpnimage/列表-press.png</file>
+        <file>image/vpnimage/轮播图.png</file>
+        <file alias="view">image/vpnimage/视图-formal.png</file>
+        <file alias="viewselected">image/vpnimage/视图-press.png</file>
+        <file>image/vpnimage/数据分析平台-formal.png</file>
+        <file>image/vpnimage/数据分析平台-press.png</file>
+        <file>image/vpnimage/搜索.png</file>
+        <file alias="logout">image/vpnimage/退出.png</file>
+        <file>image/vpnimage/用户 退出点击底图.png</file>
+        <file alias="user">image/vpnimage/用户(1).png</file>
+        <file>image/vpnimage/智能运维总控平台-formal.png</file>
+        <file>image/vpnimage/智能运维总控平台-press.png</file>
     </qresource>
     <qresource prefix="/new/vpn/services">
         <file alias="ftp">image/services/ftp.png</file>

@@ -138,17 +138,18 @@ HomeWindow::HomeWindow(QWidget *parent) :
     connect(QMessageHandles::instance(), &QMessageHandles::UpdateServciesList, this, &HomeWindow::UpdateServciesList);
 
     //初始化语言
-    LoginDialog dia(m_userInfo);
-    if (QDialog::Accepted == dia.exec())
-    {
-        this->serverIp = dia.getServerIP();
-        qDebug() << this->serverIp << endl;
-        ui->label->setText("<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; color:#458b67;\">你好，"+m_userInfo.uname+"，欢迎中车VPN客户端！</span></p></body></html>");
-    }
-    else
-    {
-        exit(1);
-    }
+//    LoginDialog dia(m_userInfo);
+//    if (QDialog::Accepted == dia.exec())
+//    {
+//        this->serverIp = dia.getServerIP();
+//        qDebug() << this->serverIp << endl;
+//        //ui->label->setText("<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; color:#458b67;\">你好，"+m_userInfo.uname+"，欢迎中车VPN客户端！</span></p></body></html>");
+//        ui->userButton->setText(m_userInfo.uname);
+//    }
+//    else
+//    {
+//        exit(1);
+//    }
 }
 
 void HomeWindow::UpdateServciesList(QString services)
@@ -246,7 +247,7 @@ void HomeWindow::getAllServices(QString serviceList)
 void HomeWindow::addImage(QString path, int counter)
 {
     ui->movieWidget->addImage(path);
-    if(counter==3)
+    //if(counter==3)
         ui->movieWidget->startPlay();
 
 }
@@ -308,6 +309,7 @@ void HomeWindow::on_tableWidget_customContextMenuRequested(QPoint pos)
 
 void HomeWindow::tabChanged(int index)
 {
+   // ui->tabWidget
     if(index ==1)
         updatetableUI();
 }
@@ -435,9 +437,9 @@ void HomeWindow::initTitleBar()
     m_titleBar = new MyTitleBar(this);
     m_titleBar->move(0, 0);
     //m_titleBar->setTitleIcon(":/new/index/mainwintitle",QSize(145, 30));
-    m_titleBar->setTitleIcon(":new/vpn/vpnlogo",QSize(145, 30));
+    //m_titleBar->setTitleIcon(":new/vpn/vpnlogo",QSize(145, 30));
     m_titleBar->setTitleContent(tr("方德云客户端"), 11);
-    m_titleBar->setBackgroundColor(69, 139, 103);
+    m_titleBar->setBackgroundColor(27, 49, 89);
     m_titleBar->setButtonType(MIN_MAX_BUTTON);
     connect(m_titleBar, SIGNAL(signalButtonMinClicked()), this, SLOT(onButtonMinClicked()));
     connect(m_titleBar, SIGNAL(signalButtonRestoreClicked()), this, SLOT(onButtonRestoreClicked()));

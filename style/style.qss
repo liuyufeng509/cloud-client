@@ -56,50 +56,50 @@ QPushButton#searchButton:pressed {
     background-color:#50a495;
 }
 
-QPushButton#updateButton {
-    border: 1px solid white;
+QPushButton#userButton {
+    /*border: 1px solid white;*/
     border-radius: 0px;
     color:white;
     font-weight:bold;
-    background-color:#50a495;
+    background-color:#1b3159;
     min-width:70px;
 }
-QPushButton#updateButton:hover {
-    border: 1px solid white;
+QPushButton#userButton:hover {
+    /*border: 1px solid white;*/
     border-radius: 0px;
     color:white;
     font-weight:normal;
-    background-color:#2a564e;
+    background-color:#37507d;
 }
-QPushButton#updateButton:pressed {
-    border: 1px solid white;
+QPushButton#userButton:pressed {
+    /*border: 1px solid white;*/
     border-radius: 0px;
     color:white;
     font-weight:bold;
-    background-color:#50a495;
+    background-color:#1b3159;
 }
 
 QPushButton#logoutButton {
-    border: 1px solid white;
-    border-radius: 0px;
-    color:white;
-    font-weight:bold;
-    background-color:#50a495;
-    min-width:70px;
-}
-QPushButton#logoutButton:hover {
-    border: 1px solid white;
+    /*border: 1px solid white;*/
     border-radius: 0px;
     color:white;
     font-weight:normal;
-    background-color:#2a564e;
+    background-color:#1b3159;
+    min-width:70px;
 }
-QPushButton#logoutButton:pressed {
-    border: 1px solid white;
+QPushButton#logoutButton:hover {
+    /*border: 1px solid white;*/
     border-radius: 0px;
     color:white;
-    font-weight:bold;
-    background-color:#50a495;
+	font-weight:bold;
+    background-color:#37507d;
+}
+QPushButton#logoutButton:pressed {
+    /*border: 1px solid white;*/
+    border-radius: 0px;
+    color:white;
+    font-weight:normal;
+    background-color:#1b3159;
 }
 
 /*中间按钮部分  不起作用，原因未知。
@@ -219,18 +219,18 @@ QTabWidget::tab-bar{        /*tab所在位置*/
       /* left:500px;*/
 }
 QTabBar::tab{
-        border: 0px solid #C4C4C3;     /*边界宽度和颜色*/
+        /*border: 0px solid #C4C4C3; */    /*边界宽度和颜色*/
         border-top-color:#212e31;       /*上边界颜色*/
-        background:#212e31;
+        /*background:#212e31;*/
         color:white;
         font-family:"Nuosu SIL";
         font-size:11px;
         font-weight:bold;
-        min-height:32 px;
+        min-height:35 px;
         min-width:73 px;
 }
 QTabBar::tab:hover{                             /*tab鼠标悬停的颜色*/
-        background:rgb(255, 255, 255, 100);
+        /*background:rgb(255, 255, 255, 100);*/
 }
 QTabBar::tab:selected{                      /*tab选中的颜色*/
         border-color: white;

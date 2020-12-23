@@ -1,6 +1,8 @@
-#include "httppicdownload.h"
+﻿#include "httppicdownload.h"
 #include <QApplication>
 #include<QMessageBox>
+#include <QFile>
+#include <QDir>
 HttpPicDownLoad::HttpPicDownLoad(QObject *parent) : QObject(parent)
 {
     Init();
@@ -60,20 +62,30 @@ void HttpPicDownLoad::downLoadPic(QString url_str)
             });
     connect(reply, &QNetworkReply::finished,this,&HttpPicDownLoad::doProceesFinished,Qt::DirectConnection);
 }
-#include <QFile>
+
 void HttpPicDownLoad::doProceesFinished()
 {
     if (reply->error() != QNetworkReply::NoError)
     {
-        qDebug()<<"some error happens when downloading pics";
+        qDebug()<<"some error happens when downloading pics："<<reply->error()<<"  "<<reply->errorString();
         return;
     }
     //pixmap.loadFromData(str);
-    QString path = qApp->applicationDirPath()+"/image/"+QString::number(counter)+".jpg";
+
+    QString path = qApp->applicationDirPath()+"/image";
+    QDir *image = new QDir;
+    bool exist = image->exists(path);
+    if(!exist)
+    {
+        //创建photo文件夹
+        image->mkdir(path);
+    }
+
+    path = path+"/"+QString::number(counter)+".jpg";
     //pixmap.save(path, "jpg");
 
-        QFile file(path);
-      if (!file.open(QIODevice::WriteOnly|QIODevice::Append))
+      QFile file(path);
+      if (!file.open(QIODevice::WriteOnly))
       {
           qDebug() <<"打开失败";
           return;
