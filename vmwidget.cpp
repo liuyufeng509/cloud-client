@@ -7,17 +7,19 @@
 #include<QFile>
 #include "setapprelationdialog.h"
 #include<QStandardPaths>
+#include<QStyleOption>
 VMWidget::VMWidget(Service &vm,QWidget *parent) :
-    QWidget(parent),
+    QFrame(parent),
     m_vm(vm),
     prt(parent),
-    ui(new Ui::VMWidget)
+    ui(new Ui::VMWidget),
+    show_menu(false)
 {
     ui->setupUi(this);
 
     setStyleSheetByStatus();
     ui->label_vmName->setText(m_vm.displayName);
-    ui->VMButton->setContextMenuPolicy(Qt::CustomContextMenu);
+    this->setContextMenuPolicy(Qt::CustomContextMenu);
     m_menu = new QMenu(this);
     setAction = new QAction( QIcon(":/new/vpn/set"),"设置启动程序",this);
     exportAction = new QAction(QIcon(":/new/vpn/export"),"创建快捷方式",this);
@@ -28,7 +30,7 @@ VMWidget::VMWidget(Service &vm,QWidget *parent) :
     m_menu->addAction(setAction);
     m_menu->addAction(exportAction);
 
-    connect(ui->VMButton, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(showMenu(const QPoint&)));
+    connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(showMenu(const QPoint&)));
 
     worker = new Worker;
 
@@ -40,6 +42,42 @@ void VMWidget::operateActionSlot()
     SetAppRelationDialog dlg(m_vm,this);
     dlg.exec();
 
+}
+
+
+// If you subclass from QWidget, you need to provide a paintEvent for your custom QWidget as below:
+//void VMWidget::paintEvent(QPaintEvent *)
+//{
+//    QStyleOption opt;
+//    opt.init(this);
+//    QPainter p(this);
+//    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+
+//       QPainter p(this);
+//       p.setPen(Qt::NoPen);
+//       p.setBrush(Qt::white);
+//       p.drawRect(rect());
+
+//}
+
+void VMWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+    if(m_vm.islocationImage)
+        ui->VMButton->setStyleSheet("border-image: url("+m_vm.imageUrl_hover+")");
+    else
+    ui->VMButton->setStyleSheet("border-image: url("+m_vm.imageUrl+"_hover)");
+    QWidget::mouseReleaseEvent(event);
+}
+
+void VMWidget::mousePressEvent(QMouseEvent *event)
+{
+    if(m_vm.islocationImage)
+        ui->VMButton->setStyleSheet("border-image: url("+m_vm.imageUrl_press+")");
+    else
+    ui->VMButton->setStyleSheet("border-image: url("+m_vm.imageUrl+"_press)");
+    setStyleSheetByStatus();
+    on_VMButton_clicked();
+    QWidget::mousePressEvent(event);
 }
 
 void VMWidget::detailActionSlot()
@@ -69,35 +107,108 @@ URL=http://Kennytian.cnblogs.com
 
 void VMWidget::showMenu(const QPoint &point)
 {
+    show_menu = true;
     m_menu->exec(mapToGlobal(point));
+}
+
+void VMWidget::enterEvent(QEvent *event)
+{
+    ui->label_vmName->setStyleSheet("font: 10pt \"微软雅黑\";"
+                                    "color: white;");
+    if(m_vm.islocationImage)
+        ui->VMButton->setStyleSheet("border-image: url("+m_vm.imageUrl_hover+")");
+    else
+    ui->VMButton->setStyleSheet("border-image: url("+m_vm.imageUrl+"_hover)");
+    QWidget::enterEvent(event);
+}
+void VMWidget::leaveEvent(QEvent *event)
+{
+    if(!show_menu)
+        ui->label_vmName->setStyleSheet("font: 10pt \"微软雅黑\";"
+                                        "color: black;");
+    show_menu = false;
+    ui->VMButton->setStyleSheet("border-image: url("+m_vm.imageUrl+")");;
+    QWidget::leaveEvent(event);
 }
 
 void VMWidget::setStyleSheetByStatus()
 {
     m_vm.getUrlandIcon();
-    setStyleSheet(" QPushButton {  \
-                      border: none; \
-                      border-radius: 0px;   \
-                      color:white;  \
-                      font-weight:bold; \
-                      image: url("+m_vm.imageUrl+");   \
-                  } \
-                  QPushButton:hover { \
-                      border: 1px solid white; \
-                      border-radius: 0px; \
-                      color:white; \
-                      font-weight:normal; \
-                      image: url("+m_vm.imageUrl+"); \
-                  } \
-                  QPushButton:pressed { \
-                      border: 1px solid white; \
-                      border-radius: 0px; \
-                      color:white; \
-                        opacity:0.4; \
-                      font-weight:bold; \
-                      image: url(/*"+m_vm.imageUrl+"*/); \
-                  }");
-
+    if(m_vm.islocationImage)
+    {
+        setStyleSheet(
+                    "QFrame{"
+                    "background-color: white;"
+                    "border-radius: 5px;"
+                    "}"
+                    "QFrame:hover{"
+                    "background-color: rgb(86,137,247);"
+                    "border-radius: 5px;"
+                    "}"
+                    "QLabel{"
+                    "font: 10pt \"华文楷体\";"
+                    "color: rgb(0, 0, 0);"
+                    "background:transparent;"
+                    "}"
+                    "QPushButton {  "
+                       "   color:white;  "
+                        "    border: 1px solid white; "
+                         "   border-radius: 33px; "
+                          "font-weight:bold; "
+                         " border-image: url("+m_vm.imageUrl+");   "
+                      "} "
+                     "QPushButton:hover {  "
+                        "   color:white;  "
+                         "    border: 1px solid white; "
+                          "   border-radius: 33px; "
+                           "font-weight:bold; "
+                          " border-image: url("+m_vm.imageUrl_hover+");   "
+                       "} "
+                     "QPushButton:pressed {  "
+                        "   color:white;  "
+                         "    border: 1px solid white; "
+                          "   border-radius: 33px; "
+                           "font-weight:bold; "
+                          " border-image: url("+m_vm.imageUrl_press+");   "
+                       "} "
+                    );
+    }else
+    setStyleSheet(
+                "QFrame{"
+                "background-color: white;"
+                "border-radius: 5px;"
+                "}"
+                "QFrame:hover{"
+                "background-color: rgb(86,137,247);"
+                "border-radius: 5px;"
+                "}"
+                "QLabel{"
+                "font: 10pt \"华文楷体\";"
+                "color: rgb(0, 0, 0);"
+                "background:transparent;"
+                "}"
+                "QPushButton {  "
+                   "   color:white;  "
+                    "    border: 1px solid white; "
+                     "   border-radius: 33px; "
+                      "font-weight:bold; "
+                     " border-image: url("+m_vm.imageUrl+");   "
+                  "} "
+                 "QPushButton:hover {  "
+                    "   color:white;  "
+                     "    border: 1px solid white; "
+                      "   border-radius: 33px; "
+                       "font-weight:bold; "
+                      " border-image: url("+m_vm.imageUrl+"_hover);   "
+                   "} "
+                 "QPushButton:pressed {  "
+                    "   color:white;  "
+                     "    border: 1px solid white; "
+                      "   border-radius: 33px; "
+                       "font-weight:bold; "
+                      " border-image: url("+m_vm.imageUrl+"_press);   "
+                   "} "
+                );
 }
 
 VMWidget::~VMWidget()

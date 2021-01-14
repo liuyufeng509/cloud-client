@@ -1,4 +1,4 @@
-#ifndef CAROUSELIMAGEWINDOW_H
+﻿#ifndef CAROUSELIMAGEWINDOW_H
 #define CAROUSELIMAGEWINDOW_H
 
 #include <QWidget>
@@ -21,6 +21,10 @@ public:
     void addImage(QString imageFileName);
     // 开始播放;
     void startPlay();
+
+    int imagesCount(){return m_imageList.count(); }
+
+    void cleanImages(){m_imageList.clear();}
 
 private:
     // 初始化图片切换按钮;

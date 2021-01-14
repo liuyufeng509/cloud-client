@@ -4,14 +4,14 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network script
+QT       += core gui network script sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 RC_FILE += app.rc
 
 #target folder
-TARGET = cdos-desktop-cloud 
+TARGET = vpnclient
 TEMPLATE = app
 DESTDIR = bin/
 UI_DIR = forms
@@ -42,7 +42,8 @@ SOURCES += main.cpp\
     httpdownload/httppicdownload.cpp \
     qmessagehandles.cpp \
     rdesktoptip.cpp \
-    setapprelationdialog.cpp
+    setapprelationdialog.cpp \
+    mysqldb.cpp
 
 HEADERS  += \
     homewindow.h \
@@ -64,7 +65,8 @@ HEADERS  += \
     gwsdk.h \
     qmessagehandles.h \
     rdesktoptip.h \
-    setapprelationdialog.h
+    setapprelationdialog.h \
+    mysqldb.h
 
 FORMS    += \
     vmwidget.ui \
@@ -74,8 +76,7 @@ FORMS    += \
     rdesktoptip.ui \
     setapprelationdialog.ui
 
-RESOURCES += \
-    resource.qrc
+RESOURCES += resource.qrc
 
 #CONFIG +=c++11
 CONFIG += static

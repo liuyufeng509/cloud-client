@@ -1,4 +1,4 @@
-#include "CarouselImageWindow.h"
+﻿#include "CarouselImageWindow.h"
 #include <QHBoxLayout>
 #include <QPainter>
 #include <QDebug>
@@ -147,7 +147,7 @@ void CarouselImageWindow::paintEvent(QPaintEvent *event)
     //if (m_imageFileNameList.isEmpty())
     if (m_imageList.isEmpty())
     {
-        QPixmap backPixmap = QPixmap(":new/vpn/vpnlogo");
+        QPixmap backPixmap = QPixmap(":/new/vpn/lunbotu");
         painter.drawPixmap(imageRect, backPixmap.scaled(imageRect.size()));
     }
     // 如果只有一张图片;

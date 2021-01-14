@@ -59,6 +59,8 @@ void HttpPicDownLoad::downLoadPic(QString url_str)
                     default:
                         break;
                 }
+                emit downloadError();
+
             });
     connect(reply, &QNetworkReply::finished,this,&HttpPicDownLoad::doProceesFinished,Qt::DirectConnection);
 }

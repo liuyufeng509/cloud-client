@@ -108,11 +108,14 @@
            <height>35</height>
           </size>
          </property>
+         <property name="layoutDirection">
+          <enum>Qt::LeftToRight</enum>
+         </property>
          <property name="text">
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="resource.qrc">
+          <iconset>
            <normaloff>:/new/vpn/user</normaloff>:/new/vpn/user</iconset>
          </property>
         </widget>
@@ -129,7 +132,7 @@
           <string>退出</string>
          </property>
          <property name="icon">
-          <iconset resource="resource.qrc">
+          <iconset>
            <normaloff>:/new/vpn/logout</normaloff>:/new/vpn/logout</iconset>
          </property>
         </widget>
@@ -140,28 +143,36 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="viewTab">
        <attribute name="icon">
         <iconset resource="resource.qrc">
-         <normaloff>:/new/vpn/view</normaloff>:/new/vpn/view</iconset>
+         <normaloff>:/new/vpn/viewselected</normaloff>:/new/vpn/viewselected</iconset>
        </attribute>
        <attribute name="title">
         <string>视图</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout">
+       <layout class="QGridLayout" name="gridLayout" rowstretch="3,0,6">
+        <property name="leftMargin">
+         <number>7</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <property name="horizontalSpacing">
+         <number>7</number>
+        </property>
         <item row="1" column="0">
          <widget class="QLineEdit" name="lineEdit">
           <property name="styleSheet">
            <string notr="true">border: 1px solid #C4C4C3;</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QPushButton" name="searchButton">
-          <property name="text">
-           <string> 搜索</string>
           </property>
          </widget>
         </item>
@@ -189,6 +200,9 @@ background-color:gray;
         </item>
         <item row="2" column="0" colspan="2">
          <widget class="QScrollArea" name="scrollArea">
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
           <property name="widgetResizable">
            <bool>true</bool>
           </property>
@@ -197,11 +211,29 @@ background-color:gray;
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1024</width>
-             <height>426</height>
+             <width>1035</width>
+             <height>301</height>
             </rect>
            </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
            <layout class="QVBoxLayout" name="verticalLayout">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_2">
               <property name="leftMargin">
@@ -217,12 +249,27 @@ background-color:gray;
                <number>0</number>
               </property>
               <item>
-               <widget class="QWidget" name="vmsWidget" native="true"/>
+               <widget class="QWidget" name="vmsWidget" native="true">
+                <property name="styleSheet">
+                 <string notr="true">.QWidget{border-image: url(:/new/vpn/ditu);}</string>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>
            </layout>
           </widget>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QPushButton" name="searchButton">
+          <property name="text">
+           <string> 搜索</string>
+          </property>
+          <property name="icon">
+           <iconset resource="resource.qrc">
+            <normaloff>:/new/vpn/image/vpnimage/sousuo.png</normaloff>:/new/vpn/image/vpnimage/sousuo.png</iconset>
+          </property>
          </widget>
         </item>
        </layout>
@@ -233,18 +280,31 @@ background-color:gray;
          <normaloff>:/new/vpn/list</normaloff>:/new/vpn/list</iconset>
        </attribute>
        <attribute name="title">
-        <string>☷列表</string>
+        <string>列表</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="0">
          <widget class="QTableWidget" name="tableWidget">
+          <property name="styleSheet">
+           <string notr="true">QHeaderView::section {	
+	color: black;
+	text-align:center;
+	border:1px solid black;
+	border-left:none;
+	border-top:none;
+}
+</string>
+          </property>
+          <attribute name="horizontalHeaderDefaultSectionSize">
+           <number>200</number>
+          </attribute>
           <column>
            <property name="text">
             <string>名称</string>
            </property>
            <property name="icon">
             <iconset resource="resource.qrc">
-             <normaloff>:/new/index/run_namal</normaloff>:/new/index/run_namal</iconset>
+             <normaloff>:/new/vpn/image/vpnimage/logo.png</normaloff>:/new/vpn/image/vpnimage/logo.png</iconset>
            </property>
           </column>
           <column>
@@ -254,22 +314,12 @@ background-color:gray;
           </column>
           <column>
            <property name="text">
-            <string>在线状态</string>
+            <string>IP</string>
            </property>
           </column>
           <column>
            <property name="text">
-            <string>对外IP</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>对外端口</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>创建时间</string>
+            <string>访问路径</string>
            </property>
           </column>
          </widget>
@@ -286,11 +336,186 @@ background-color:gray;
         <height>30</height>
        </size>
       </property>
+      <property name="palette">
+       <palette>
+        <active>
+         <colorrole role="WindowText">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>255</red>
+            <green>255</green>
+            <blue>255</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="Button">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>47</red>
+            <green>47</green>
+            <blue>47</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="Text">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>255</red>
+            <green>255</green>
+            <blue>255</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="Base">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>47</red>
+            <green>47</green>
+            <blue>47</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="Window">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>47</red>
+            <green>47</green>
+            <blue>47</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="PlaceholderText">
+          <brush brushstyle="SolidPattern">
+           <color alpha="128">
+            <red>255</red>
+            <green>255</green>
+            <blue>255</blue>
+           </color>
+          </brush>
+         </colorrole>
+        </active>
+        <inactive>
+         <colorrole role="WindowText">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>255</red>
+            <green>255</green>
+            <blue>255</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="Button">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>47</red>
+            <green>47</green>
+            <blue>47</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="Text">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>255</red>
+            <green>255</green>
+            <blue>255</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="Base">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>47</red>
+            <green>47</green>
+            <blue>47</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="Window">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>47</red>
+            <green>47</green>
+            <blue>47</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="PlaceholderText">
+          <brush brushstyle="SolidPattern">
+           <color alpha="128">
+            <red>255</red>
+            <green>255</green>
+            <blue>255</blue>
+           </color>
+          </brush>
+         </colorrole>
+        </inactive>
+        <disabled>
+         <colorrole role="WindowText">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>120</red>
+            <green>120</green>
+            <blue>120</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="Button">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>47</red>
+            <green>47</green>
+            <blue>47</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="Text">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>120</red>
+            <green>120</green>
+            <blue>120</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="Base">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>47</red>
+            <green>47</green>
+            <blue>47</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="Window">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>47</red>
+            <green>47</green>
+            <blue>47</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="PlaceholderText">
+          <brush brushstyle="SolidPattern">
+           <color alpha="128">
+            <red>0</red>
+            <green>0</green>
+            <blue>0</blue>
+           </color>
+          </brush>
+         </colorrole>
+        </disabled>
+       </palette>
+      </property>
       <property name="styleSheet">
        <string notr="true">background-color: rgb(47, 47, 47);</string>
       </property>
       <property name="text">
-       <string/>
+       <string>中国中车股份有限公司 版权所有 2016 京ICP备 15050284号 京公网安备11010802020546号</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
       </property>
      </widget>
     </item>

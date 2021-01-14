@@ -55,17 +55,19 @@ private slots:
     void on_logoutButton_clicked();
 
     void tabChanged(int );
-    void on_tableWidget_customContextMenuRequested(QPoint pos);
-    void detailActionSlot();
-    void operateActionSlot();
 
     void on_updateButton_clicked();
 
     void addImage(QString path, int counter);
+    void downPicErrorSlot();
 
     void getAllServices(QString serviceList);
 
     void UpdateServciesList(QString services);
+
+    void on_lineEdit_textChanged(const QString &arg1);
+
+    void on_searchButton_clicked();
 
 private:
     void moveToCenter();
@@ -90,10 +92,6 @@ private:
     Worker *worker;
 
 
-    //table context menu
-    QMenu *m_menu;
-    QAction *operAction;
-    QAction *detailAction;
 
 
     //http图片下载

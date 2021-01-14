@@ -36,7 +36,7 @@
 #include <QDesktopServices>
 #include "rdesktoptip.h"
 #include <QProcess>
-
+#include"mysqldb.h"
 HomeWindow::HomeWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::HomeWindow)
@@ -45,7 +45,7 @@ HomeWindow::HomeWindow(QWidget *parent) :
     this->setWindowFlags(Qt::FramelessWindowHint);
     setMinimumSize(minWidth, minHeight);    //最小值设为700*500
 
-    m_flowLayout = new QFlowLayout;
+    m_flowLayout = new QFlowLayout(-1,30,30);
     ui->vmsWidget->setLayout(m_flowLayout);
 
     moveToCenter();
@@ -89,16 +89,6 @@ HomeWindow::HomeWindow(QWidget *parent) :
     ui->tableWidget->setEditTriggers ( QAbstractItemView::NoEditTriggers );
     connect(ui->tableWidget, &QTableWidget::cellDoubleClicked, this, &HomeWindow::openVmOfTable);
 
-    ui->tableWidget->setContextMenuPolicy(Qt::CustomContextMenu);   //右键菜单
-    m_menu = new QMenu(ui->tableWidget);
-    operAction = new QAction(this);
-    detailAction = new QAction(this);
-    detailAction->setText(tr("详细信息"));
-    operAction->setText(tr("关机"));
-
-
-    connect(operAction, SIGNAL(triggered()), this, SLOT(operateActionSlot()));
-    connect(detailAction, SIGNAL(triggered()), this, SLOT(detailActionSlot()));
 
 
     //使用拖拽拉伸功能
@@ -114,6 +104,7 @@ HomeWindow::HomeWindow(QWidget *parent) :
     m_picDown = new HttpPicDownLoad(this);
 
     connect(m_picDown, &HttpPicDownLoad::alreadyDownload, this, &HomeWindow::addImage);
+    connect(m_picDown, &HttpPicDownLoad::downloadError, this, &HomeWindow::downPicErrorSlot);
 
     //幻灯片效果
 //    ui->movieWidget->addImage("C:\\Users\\Administrator\\Desktop\\test\\1.png");
@@ -127,9 +118,14 @@ HomeWindow::HomeWindow(QWidget *parent) :
 //    m_picDown->addUrl("http://c.runoob.com/wp-content/uploads/2017/01/img_fjords_wide.jpg");
 //    m_picDown->addUrl("http://c.runoob.com/wp-content/uploads/2017/01/img_nature_wide.jpg");
 //    m_picDown->addUrl("http://c.runoob.com/wp-content/uploads/2017/01/img_mountains_wide.jpg");
-    m_picDown->addUrl("http://localhost/images/1.jpg");
-    m_picDown->addUrl("http://localhost/images/2.jpg");
-    m_picDown->addUrl("http://localhost/images/3.jpg");
+    QString path = QApplication::applicationDirPath();
+    path = path + QString("/")+ QString("config.ini");
+    QSettings settings(path, QSettings::IniFormat);
+    QString ip = settings.value("server/ip",'localhost').toString();
+
+    m_picDown->addUrl("http://"+ip+"/images/1.jpg");
+    m_picDown->addUrl("http://"+ip+"/images/2.jpg");
+    m_picDown->addUrl("http://"+ip+"/images/3.jpg");
     m_picDown->downLoadPic();
 
 
@@ -138,18 +134,32 @@ HomeWindow::HomeWindow(QWidget *parent) :
     connect(QMessageHandles::instance(), &QMessageHandles::UpdateServciesList, this, &HomeWindow::UpdateServciesList);
 
     //初始化语言
-//    LoginDialog dia(m_userInfo);
-//    if (QDialog::Accepted == dia.exec())
+    LoginDialog dia(m_userInfo);
+    if (QDialog::Accepted == dia.exec())
+    {
+        this->serverIp = dia.getServerIP();
+        qDebug() << this->serverIp << endl;
+        //ui->label->setText("<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; color:#458b67;\">你好，"+m_userInfo.uname+"，欢迎中车VPN客户端！</span></p></body></html>");
+        ui->userButton->setText(m_userInfo.uname);
+    }
+    else
+    {
+        exit(1);
+    }
+
+
+//    for(int i=0; i<6;i++)
 //    {
-//        this->serverIp = dia.getServerIP();
-//        qDebug() << this->serverIp << endl;
-//        //ui->label->setText("<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; color:#458b67;\">你好，"+m_userInfo.uname+"，欢迎中车VPN客户端！</span></p></body></html>");
-//        ui->userButton->setText(m_userInfo.uname);
+//        Service serv;
+//        serv.accessType = 1;
+//        serv.displayName = "数据分析平台"+QString::number(i);
+//        serv.id = 1;
+//        serv.servType = 1;
+//        servicesList.append(serv);
 //    }
-//    else
-//    {
-//        exit(1);
-//    }
+     updateViewUI();
+     updatetableUI();
+
 }
 
 void HomeWindow::UpdateServciesList(QString services)
@@ -204,6 +214,7 @@ void HomeWindow::UpdateServciesList(QString services)
     }
 
     updateViewUI();
+    updatetableUI();
 }
 
 void HomeWindow::getAllServices(QString serviceList)
@@ -228,6 +239,7 @@ void HomeWindow::getAllServices(QString serviceList)
             return;
         }
         servicesList.clear();
+        QList<AppIcon> appicons = MysqlDb::instance()->getAllAppIcons();
         for(int i=0; i<serviceCount;i++)
         {
             QJsonObject server_obj = servicelist_value.at(i).toObject();
@@ -236,80 +248,43 @@ void HomeWindow::getAllServices(QString serviceList)
             serv.displayName = server_obj.value("DisplayName").toString();
             serv.id = server_obj.value("ID").toInt();
             serv.servType = server_obj.value("ServType").toInt();
+            serv.appicons = appicons;
             servicesList.append(serv);
         }
 
     }
 
     updateViewUI();
+    updatetableUI();
 }
-
+//一旦下载发生错误，就不再下载，直接播放
+void HomeWindow::downPicErrorSlot()
+{
+    ui->movieWidget->startPlay();
+}
+//每下完一张图片，就进入这个函数
 void HomeWindow::addImage(QString path, int counter)
 {
+    qDebug()<<"addImage:"<<path;
     ui->movieWidget->addImage(path);
-    //if(counter==3)
+    if(counter==3)//当下完三张后，才进行播放
         ui->movieWidget->startPlay();
-
-}
-
-void HomeWindow::operateActionSlot()
-{
-    //startup or shutdown
-    int row = ui->tableWidget->currentRow();
-    if(row<0)
-    {
-        QMessageBox::information(NULL, "提示","请选择操作的虚拟机");
-        return;
-    }
-
-
-    if(worker->operateVMs(vmArray[row].vid,&vmArray[row].status))
-    {
-        sleep(3);
-        worker->getVMsIpPort(vmArray);
-        updatetableUI();
-        updateViewUI();
-
-        QMessageBox::information(NULL, "提示","开关机操作成功");
-    }
-}
-
-void HomeWindow::detailActionSlot()
-{
-    //detail info
-    int row = ui->tableWidget->currentRow();
-    if(row<0)
-    {
-        QMessageBox::information(NULL, "提示","请选择操作的虚拟机");
-        return;
-    }
-    DetailDialog dlg(vmArray[row]);
-    dlg.exec();
 }
 
 
-
-void HomeWindow::on_tableWidget_customContextMenuRequested(QPoint pos)
-{
-    m_menu->addAction(operAction);
-    m_menu->addAction(detailAction);
-    int row = ui->tableWidget->currentRow();
-    if(row<0)
-    {
-        return;
-    }
-    if(vmArray[row].status == RUNING)
-    {
-        operAction->setText(tr("关机"));
-    }else
-        operAction->setText(tr("开机"));
-    m_menu->exec(QCursor::pos());
-    pos.isNull();
-}
 
 void HomeWindow::tabChanged(int index)
 {
-   // ui->tabWidget
+    if(index==0)
+    {
+        ui->tabWidget->setTabIcon(0,QIcon(":/new/vpn/viewselected"));
+        ui->tabWidget->setTabIcon(1,QIcon(":/new/vpn/list"));
+    }else
+    {
+        ui->tabWidget->setTabIcon(0,QIcon(":/new/vpn/view"));
+        ui->tabWidget->setTabIcon(1,QIcon(":/new/vpn/listselected"));
+    }
+
     if(index ==1)
         updatetableUI();
 }
@@ -322,25 +297,25 @@ void HomeWindow::handleGetAllInfoRes(bool success)
 //        QMessageBox::warning(this, "警告", "获取虚拟机信息失败，请尝试刷新");
 //    }
 
-    VM_CONFIG vm1;
-    vm1.name = "vm1";
-    vm1.vid="asdfbgasdgkjldajdf";
-    vm1.ip="192.168.0.1";
-    vm1.port = 22;
-    vm1.status = RUNING;
+//    VM_CONFIG vm1;
+//    vm1.name = "vm1";
+//    vm1.vid="asdfbgasdgkjldajdf";
+//    vm1.ip="192.168.0.1";
+//    vm1.port = 22;
+//    vm1.status = RUNING;
 
-    VM_CONFIG vm2;
-    vm2.name = "vm2";
-    vm2.vid="asdfbgasdgkjldajdf";
-    vm2.ip="192.168.0.2";
-    vm2.port = 22;
-    vm2.status = SHUTDOWN;
+//    VM_CONFIG vm2;
+//    vm2.name = "vm2";
+//    vm2.vid="asdfbgasdgkjldajdf";
+//    vm2.ip="192.168.0.2";
+//    vm2.port = 22;
+//    vm2.status = SHUTDOWN;
 
-    vmArray.push_back(vm1);
-    vmArray.push_back(vm2);
+//    vmArray.push_back(vm1);
+//    vmArray.push_back(vm2);
 
-    updateViewUI();
-    updatetableUI();
+//    updateViewUI();
+//    updatetableUI();
 }
 
 void HomeWindow::clearLayout(QLayout *layout)
@@ -371,18 +346,16 @@ void HomeWindow::resizeEvent(QResizeEvent *e)
 void HomeWindow::updatetableUI()
 {
     ui->tableWidget->setRowCount(0);
-    ui->tableWidget->setRowCount(vmArray.size());
-    ui->tableWidget->setToolTip(tr("右键可对用户进行操作"));
-    for(int i=0; i<vmArray.size(); i++)
+    ui->tableWidget->setRowCount(servicesList.size());
+    //ui->tableWidget->setToolTip(tr("右键可对用户进行操作"));
+    for(int i=0; i<servicesList.size(); i++)
     {
         QIcon icon;
-        icon.addFile(":/new/index/run_namal", QSize(32,32));
-        ui->tableWidget->setItem(i, 0, new QTableWidgetItem(icon,vmArray[i].name));
-        ui->tableWidget->setItem(i, 1, new QTableWidgetItem(vmArray[i].vid));
-        ui->tableWidget->setItem(i, 2, new QTableWidgetItem(QString::number(vmArray[i].status)));
-        ui->tableWidget->setItem(i, 3, new QTableWidgetItem(vmArray[i].ip));
-        ui->tableWidget->setItem(i, 4, new QTableWidgetItem(QString::number(vmArray[i].port)));
-        ui->tableWidget->setItem(i, 5, new QTableWidgetItem(vmArray[i].created));
+        icon.addFile(":/new/vpn/vpnlogo", QSize(32,32));
+        ui->tableWidget->setItem(i, 0, new QTableWidgetItem(/*icon,*/servicesList[i].displayName));
+        ui->tableWidget->setItem(i, 1, new QTableWidgetItem(QString::number(servicesList[i].id)));
+        ui->tableWidget->setItem(i, 2, new QTableWidgetItem(servicesList[i].ip));
+        ui->tableWidget->setItem(i, 3, new QTableWidgetItem(servicesList[i].url));
     }
 }
 
@@ -397,6 +370,7 @@ void HomeWindow::updateViewUI()
        int k = this->width()/vm->width();
        //ui->vmsGridLayout->addWidget(vm, i/k, i%k);
         m_flowLayout->addWidget(vm);
+
         connect(vm, &VMWidget::emitData, this, &HomeWindow::openVm);
    }
 }
@@ -514,6 +488,11 @@ void HomeWindow::keyPressEvent(QKeyEvent *e)
     {
         return;
     }
+    if(e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return)
+    {
+        on_searchButton_clicked();
+        return;
+    }
     if(e ->modifiers() == Qt::AltModifier  && e ->key() == Qt::Key_Tab)
     {
         e->ignore();
@@ -572,4 +551,39 @@ void HomeWindow::on_updateButton_clicked()
         QMessageBox::information(NULL, tr("提示"), tr("已是最新版本，不需要升级"));
     }
 
+}
+
+void HomeWindow::on_lineEdit_textChanged(const QString &arg1)
+{
+
+}
+
+void HomeWindow::on_searchButton_clicked()
+{
+    if(ui->lineEdit->text().isEmpty())
+    {
+        //QMessageBox::information(this, "提示","请输入服务名称");
+        updateViewUI();
+        return;
+    }
+    QList<Service> resList;
+    for(int i=0;i<servicesList.size();i++)
+    {
+        if(servicesList[i].displayName.contains(ui->lineEdit->text()))
+        {
+            resList.append(servicesList[i]);
+        }
+    }
+
+    clearLayout(m_flowLayout);
+    //计算每行放几个vm
+    for(int i=0; i<resList.size(); i++)
+   {
+       VMWidget *vm = new VMWidget(resList[i],this);
+       int k = this->width()/vm->width();
+       //ui->vmsGridLayout->addWidget(vm, i/k, i%k);
+        m_flowLayout->addWidget(vm);
+
+        connect(vm, &VMWidget::emitData, this, &HomeWindow::openVm);
+   }
 }

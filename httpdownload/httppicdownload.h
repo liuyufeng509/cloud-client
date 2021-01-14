@@ -1,4 +1,4 @@
-#ifndef HTTPPICDOWNLOAD_H
+﻿#ifndef HTTPPICDOWNLOAD_H
 #define HTTPPICDOWNLOAD_H
 
 #include <QObject>
@@ -28,6 +28,7 @@ private:
     QStringList urls;//所有图片的路径
 signals:
     void alreadyDownload(QString path,int counter);
+    void downloadError();
 public slots:
     void doProcessReadyRead();
     void doProceesFinished();

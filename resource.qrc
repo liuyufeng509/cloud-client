@@ -37,33 +37,43 @@
         <file alias="export">image/export.png</file>
         <file alias="midlogo">image/midlogo.png</file>
         <file>image/vpnimage/logo.png</file>
-        <file>image/vpnimage/车辆段工艺设备远程监控系统-formal.png</file>
-        <file>image/vpnimage/车辆段工艺设备远程监控系统-press.png</file>
-        <file>image/vpnimage/车辆数据管理平台-formal.png</file>
-        <file>image/vpnimage/车辆数据管理平台-press.png</file>
-        <file>image/vpnimage/底图.png</file>
-        <file>image/vpnimage/关闭.png</file>
-        <file>image/vpnimage/轨旁检测系统-formal.png</file>
-        <file>image/vpnimage/轨旁检测系统-press.png</file>
-        <file>image/vpnimage/架大修信息化系统-formal.png</file>
-        <file>image/vpnimage/架大修信息化系统-press.png</file>
-        <file alias="list">image/vpnimage/列表-formal.png</file>
-        <file alias="listselected">image/vpnimage/列表-press.png</file>
-        <file>image/vpnimage/轮播图.png</file>
-        <file alias="view">image/vpnimage/视图-formal.png</file>
-        <file alias="viewselected">image/vpnimage/视图-press.png</file>
-        <file>image/vpnimage/数据分析平台-formal.png</file>
-        <file>image/vpnimage/数据分析平台-press.png</file>
-        <file>image/vpnimage/搜索.png</file>
-        <file alias="logout">image/vpnimage/退出.png</file>
-        <file>image/vpnimage/用户 退出点击底图.png</file>
-        <file alias="user">image/vpnimage/用户(1).png</file>
-        <file>image/vpnimage/智能运维总控平台-formal.png</file>
-        <file>image/vpnimage/智能运维总控平台-press.png</file>
+        <file alias="whitebackgroud">image/vpnimage/white-ground.png</file>
+        <file alias="user">image/vpnimage/yonghu.png</file>
+        <file alias="logout">image/vpnimage/tuichu.png</file>
+        <file>image/vpnimage/yonghutuichudianjiditu.png</file>
+        <file>image/vpnimage/close.png</file>
+        <file alias="view">image/vpnimage/shitu-formal.png</file>
+        <file alias="viewselected">image/vpnimage/shitu-press.png</file>
+        <file alias="listselected">image/vpnimage/liebiao-press.png</file>
+        <file alias="list">image/vpnimage/liebiao-formal.png</file>
+        <file alias="lunbotu">image/vpnimage/lunbotu.png</file>
+        <file>image/vpnimage/zhinengyunwei-press.png</file>
+        <file>image/vpnimage/zhinengyunwei-formal.png</file>
+        <file>image/vpnimage/cheliangshuju-press.png</file>
+        <file>image/vpnimage/cheliangshuju-formal.png</file>
+        <file>image/vpnimage/shujufenxipingtai-formal.png</file>
+        <file>image/vpnimage/shujufenxipingtai-press.png</file>
+        <file>image/vpnimage/guipangjiance-formal.png</file>
+        <file>image/vpnimage/guipangjiance-press.png</file>
+        <file>image/vpnimage/cheliangduan-formal.png</file>
+        <file>image/vpnimage/cheliangduan-press.png</file>
+        <file>image/vpnimage/jiadaxiu-formal.png</file>
+        <file>image/vpnimage/jiadaxiu-press.png</file>
+        <file>image/vpnimage/sousuo.png</file>
+        <file alias="ditu">image/vpnimage/ditu.png</file>
     </qresource>
     <qresource prefix="/new/vpn/services">
         <file alias="ftp">image/services/ftp.png</file>
         <file alias="http">image/services/http.png</file>
         <file alias="https">image/services/https.png</file>
+        <file alias="ftp_press">image/services/ftp_press.png</file>
+        <file alias="http_press">image/services/http_press.png</file>
+        <file alias="https_press">image/services/https_press.png</file>
+        <file alias="default">image/services/default.png</file>
+        <file alias="default_hover">image/services/default_hover.png</file>
+        <file alias="default_press">image/services/default_press.png</file>
+        <file alias="ftp_hover">image/services/ftp_hover.png</file>
+        <file alias="http_hover">image/services/http_hover.png</file>
+        <file alias="https_hover">image/services/https_hover.png</file>
     </qresource>
 </RCC>

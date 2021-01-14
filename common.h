@@ -18,6 +18,13 @@ struct  UserInfo//登陆窗口结构体
     QString otp;
 };
 
+struct AppIcon{
+    QString appname;
+    QString icon;
+    QString icon_press;
+    QString icon_hover;
+};
+
 struct Service
 {
     int accessType;
@@ -27,42 +34,62 @@ struct Service
     QString ip;
     QString url;
     QString imageUrl;
+    QString imageUrl_press;
+    QString imageUrl_hover;
+    bool islocationImage;
     QIcon icon;
     QString appUrl;
     QString arg;
+    QList<AppIcon> appicons;
 
     bool operator== (const Service& ar) const
     { return accessType== ar.accessType && displayName==ar.displayName && id==ar.id && servType==ar.servType;}
 
     void getUrlandIcon()
     {
+        islocationImage = false;
         switch (servType) {
         case 1:
             url = "http://"+ip+":80";
             imageUrl = ":/new/vpn/services/http";
             icon.addFile(":/new/vpn/services/http");
 
-            return;
+            break;
         case 2:
             url = "https://"+ip+":443";
             imageUrl = ":/new/vpn/services/https";
             icon.addFile(":/new/vpn/services/https");
-            return;
+            break;
         case 3:
             url = "ftp://"+ip+":21";
             imageUrl = ":/new/vpn/services/ftp";
             icon.addFile(":/new/vpn/services/ftp");
-            return;
+            break;
         case 4:
             url = "telnet "+ip +":23";
             return;
         case 5:
             url = "ssh "+ip +":22";
-            return;
+            break;
         case 14:
             url = "tftp://"+ip+":69";
-            return;
+            break;
+        default:
+            imageUrl = ":/new/vpn/services/default";
+            icon.addFile(":/new/vpn/services/defualt");
 
+        }
+
+        for(int i=0;i<appicons.size();i++)
+        {
+            if(appicons[i].appname == displayName)
+            {
+                islocationImage = true;
+                imageUrl = appicons[i].icon;
+                imageUrl_hover = appicons[i].icon_hover;
+                imageUrl_press = appicons[i].icon_press;
+                break;
+            }
         }
     }
 };
@@ -89,6 +116,8 @@ struct VM_CONFIG{
     QString created;
     QVector<Addr> addrs;
 };
+
+
 
 typedef QVector<VM_CONFIG>   VMVECTOR;//TE策略列表类型
 

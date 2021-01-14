@@ -13,7 +13,7 @@ namespace Ui {
 class VMWidget;
 }
 
-class VMWidget : public QWidget
+class VMWidget : public QFrame
 {
     Q_OBJECT
 
@@ -24,8 +24,16 @@ public:
 
     void setSvrIP(QString ip){worker->setSvrIP(ip);}
     void setUserInfo(UserInfo usr){worker->setUserInfo(usr);}
+
+protected:
+    //void paintEvent(QPaintEvent *);
+    void enterEvent(QEvent *event);
+    void leaveEvent(QEvent *event);
+    void mousePressEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
 signals:
     void emitData(Service vm);
+
 
 private slots:
     void on_VMButton_clicked();
@@ -44,6 +52,7 @@ private:
     Worker *worker;
 
     QWidget *prt;
+    bool show_menu;
 };
 
 #endif // VMWIDGET_H

@@ -10,6 +10,7 @@
 #include <QRegExpValidator>
 #include "qmessagehandles.h"
 #include <QTimer>
+#include <QSettings>
 
 LoginDialog::LoginDialog(UserInfo &usrInfo, QWidget *parent) :
     QDialog(parent),
@@ -40,6 +41,7 @@ LoginDialog::LoginDialog(UserInfo &usrInfo, QWidget *parent) :
     connect(this, &LoginDialog::operate, worker, &Worker::Login);
     connect(QMessageHandles::instance(), &QMessageHandles::loginReady, this, &LoginDialog::handleLoginRes);
     workerThread.start();
+    readLoginInfo();
 }
 
 
@@ -93,7 +95,7 @@ void LoginDialog::on_loginPushButton_clicked()
     {
         ui->serverLineEdit->setFocus();
         ui->serverLineEdit->setCursorPosition(ui->serverLineEdit->text().length());
-        ui->serverLineEdit->setStyleSheet("background-color: yellow;");
+        ui->serverLineEdit->setStyleSheet("background-color: yellow;color:black;");
         return;
     }
 
@@ -101,59 +103,82 @@ void LoginDialog::on_loginPushButton_clicked()
     {
         ui->serverLineEdit->setFocus();
         ui->serverLineEdit->setCursorPosition(ui->serverLineEdit->text().length());
-        ui->serverLineEdit->setStyleSheet("background-color: yellow;");
+        ui->serverLineEdit->setStyleSheet("background-color: yellow;color:black;");
         return;
     }
 
-    ui->serverLineEdit->setStyleSheet("background-color: white;");
+    ui->serverLineEdit->setStyleSheet("background-color: white;color:black;");
 
     //端口号合法性判断
     if (m_userInfo.port.isEmpty())
     {
         ui->portLineEdit->setFocus();
         ui->portLineEdit->setCursorPosition(ui->portLineEdit->text().length());
-        ui->portLineEdit->setStyleSheet("background-color: yellow;");
+        ui->portLineEdit->setStyleSheet("background-color: yellow;color:black;");
         return;
     }
 
-    ui->portLineEdit->setStyleSheet("background-color: white;");
+    ui->portLineEdit->setStyleSheet("background-color: white;color:black;");
 
     //用户名合法性判断
     if (m_userInfo.uname.isEmpty())
     {
         ui->usernameLineEdit->setFocus();
         ui->usernameLineEdit->setCursorPosition(ui->usernameLineEdit->text().length());
-        ui->usernameLineEdit->setStyleSheet("background-color: yellow;");
+        ui->usernameLineEdit->setStyleSheet("background-color: yellow;color:black;");
         return;
     }
 
-    ui->usernameLineEdit->setStyleSheet("background-color: white;");
+    ui->usernameLineEdit->setStyleSheet("background-color: white;color:black;");
 
     //密码合法性判断
     if(m_userInfo.pwd.isEmpty())
     {
         ui->passwdLineEdit->setFocus();
         ui->passwdLineEdit->setCursorPosition(ui->passwdLineEdit->text().length());
-        ui->passwdLineEdit->setStyleSheet("background-color: yellow;");
+        ui->passwdLineEdit->setStyleSheet("background-color: yellow;color:black;");
         return;
     }
-    ui->passwdLineEdit->setStyleSheet("background-color: white;");
+    ui->passwdLineEdit->setStyleSheet("background-color: white;color:black;");
 
     //动态口令合法性判断
     if(m_userInfo.otp.isEmpty())
     {
         ui->otpLineEdit->setFocus();
         ui->otpLineEdit->setCursorPosition(ui->otpLineEdit->text().length());
-        ui->otpLineEdit->setStyleSheet("background-color: yellow;");
+        ui->otpLineEdit->setStyleSheet("background-color: yellow;color:black;");
         return;
     }
-    ui->passwdLineEdit->setStyleSheet("background-color: white;");
-
+    ui->passwdLineEdit->setStyleSheet("background-color: white;color:black;");
+    //记住登录信息
+    saveLoginInfo();
     //worker->setSvrIP(serverIP);
     QTimer::singleShot(5000, this, SLOT(loginTimeOut()));
     emit operate(m_userInfo);
     waitDiaogAppear();
+
 }
+
+void LoginDialog::saveLoginInfo()
+{
+    QString path = QApplication::applicationDirPath();
+    path = path + QString("/")+ QString("login.ini");
+    QSettings settings(path, QSettings::IniFormat);
+    settings.setValue("login/ip", ui->serverLineEdit->text());
+    settings.setValue("login/port", ui->portLineEdit->text());
+    settings.setValue("login/username", ui->usernameLineEdit->text());
+}
+
+void LoginDialog::readLoginInfo()
+{
+    QString path = QApplication::applicationDirPath();
+    path = path + QString("/")+ QString("login.ini");
+    QSettings settings(path, QSettings::IniFormat);
+    ui->serverLineEdit->setText(settings.value("login/ip", "").toString());
+    ui->portLineEdit->setText(settings.value("login/port", "").toString());
+    ui->usernameLineEdit->setText(settings.value("login/username", "").toString());
+}
+
 
 void LoginDialog::loginTimeOut()
 {

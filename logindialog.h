@@ -43,6 +43,9 @@ private:
     void waitDiaogAppear();
     void waitDialogAccept();
 
+    void saveLoginInfo();
+    void readLoginInfo();
+
     Ui::LoginDialog *ui;
     QString serverIP;
     bool m_Drag;
