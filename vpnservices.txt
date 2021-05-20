@@ -1,0 +1,15 @@
+"-GroupListEnd- 
+ID    DisplayName					AccessType						ServType	 ip地址等信息。
+5     ftp_5     				0     1     		0     0     0     3          ftp_5,192.168.70.5,192.168.70.5,192.168.70.5,192.168.70.5
+1     统一运维平台     			0     1     		0     0     0     1          统一运维平台,10.20.0.231,10.20.0.231,10.20.0.231,10.20.0.231
+2     重庆地铁智能运维系统     	0     1     		0     0     0     1          重庆地铁智能运维系统,192.168.71.10,192.168.71.10,192.168.71.10,192.168.71.10
+6     ftp_12     				0     1     		0     0     0     3          ftp_12,192.168.70.12,192.168.70.12,192.168.70.12,192.168.70.12
+3     nginx代理-重庆     		0     1     		0     0     0     1          nginx代理-重庆,192.168.70.5,192.168.70.5,192.168.70.5,192.168.70.5"
+
+
+
+{"AccessType":1,"DisplayName":"ftp_5","ID":5,"ServType":3},
+{"AccessType":1,"DisplayName":"统一运维平台","ID":1,"ServType":1},
+{"AccessType":1,"DisplayName":"重庆地铁智能运维系统","ID":2,"ServType":1},
+{"AccessType":1,"DisplayName":"ftp_12","ID":6,"ServType":3},
+{"AccessType":1,"DisplayName":"nginx代理-重庆","ID":3,"ServType":1}

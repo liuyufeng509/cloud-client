@@ -580,7 +580,7 @@ border: 0px solid white;
 color: rgb(0, 0, 0);</string>
         </property>
         <property name="text">
-         <string>Abc.123</string>
+         <string/>
         </property>
         <property name="echoMode">
          <enum>QLineEdit::Password</enum>
