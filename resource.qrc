@@ -61,6 +61,7 @@
         <file>image/vpnimage/jiadaxiu-press.png</file>
         <file>image/vpnimage/sousuo.png</file>
         <file alias="ditu">image/vpnimage/ditu.png</file>
+        <file alias="logo2">image/vpnimage/logo2.png</file>
     </qresource>
     <qresource prefix="/new/vpn/services">
         <file alias="ftp">image/services/ftp.png</file>

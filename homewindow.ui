@@ -115,7 +115,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset>
+          <iconset resource="resource.qrc">
            <normaloff>:/new/vpn/user</normaloff>:/new/vpn/user</iconset>
          </property>
         </widget>
@@ -132,7 +132,7 @@
           <string>退出</string>
          </property>
          <property name="icon">
-          <iconset>
+          <iconset resource="resource.qrc">
            <normaloff>:/new/vpn/logout</normaloff>:/new/vpn/logout</iconset>
          </property>
         </widget>
@@ -212,7 +212,7 @@ background-color:gray;
              <x>0</x>
              <y>0</y>
              <width>1035</width>
-             <height>301</height>
+             <height>297</height>
             </rect>
            </property>
            <property name="styleSheet">
@@ -301,10 +301,6 @@ background-color:gray;
           <column>
            <property name="text">
             <string>名称</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resource.qrc">
-             <normaloff>:/new/vpn/image/vpnimage/logo.png</normaloff>:/new/vpn/image/vpnimage/logo.png</iconset>
            </property>
           </column>
           <column>
@@ -512,7 +508,7 @@ background-color:gray;
        <string notr="true">background-color: rgb(47, 47, 47);</string>
       </property>
       <property name="text">
-       <string>中国中车股份有限公司 版权所有 2016 京ICP备 15050284号 京公网安备11010802020546号</string>
+       <string/>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>

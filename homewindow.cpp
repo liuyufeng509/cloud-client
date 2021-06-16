@@ -77,6 +77,7 @@ HomeWindow::HomeWindow(QWidget *parent) :
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);    // 设置尺寸属性
    // setMouseTracking(false);    // 界面拉伸需要这个属性
 
+    ui->tableWidget->hideColumn(1);
     connect(ui->tabWidget, SIGNAL(currentChanged(int )), this, SLOT(tabChanged(int )));
 
     ui->tableWidget->horizontalHeader()->setStretchLastSection(true);
@@ -445,7 +446,8 @@ void HomeWindow::onButtonMaxClicked()
 
 void HomeWindow::onButtonCloseClicked()
 {
-    close();
+//    close();
+    on_logoutButton_clicked();
 }
 
 void HomeWindow::moveToCenter()

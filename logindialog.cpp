@@ -183,6 +183,11 @@ void LoginDialog::readLoginInfo()
 void LoginDialog::loginTimeOut()
 {
     waitDialogAccept();
+    switch (worker->stat) {
+        case ERROR_LOGIN_FAILED:
+            QMessageBox::warning(this, "警告", "密码或口令错误，请重新填写登录信息");
+            return;
+    }
     QMessageBox::warning(this, "警告", "登录超时，请检查网络连接");
 }
 

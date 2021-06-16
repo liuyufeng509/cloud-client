@@ -49,6 +49,8 @@ private:
 
 
     UserInfo m_userInfo;
+public:
+    LoginStatus stat;
 };
 
 #endif // WORKER_H

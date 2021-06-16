@@ -27,7 +27,7 @@ bool Worker::Login(UserInfo  &userInfo)
 
     QString loginUrl = "https://"+userInfo.ip+":"+userInfo.port;
 
-    LoginStatus stat = funcLoginSslVpnEx(
+    stat = funcLoginSslVpnEx(
         loginUrl.toStdString().c_str(),
         userInfo.uname.toStdString().c_str(),
         userInfo.pwd.toStdString().c_str(),
@@ -39,6 +39,7 @@ bool Worker::Login(UserInfo  &userInfo)
         NULL,
         (char*)&content
     );
+    //qDebug()<<"============11111:"<<stat;
 }
 
 

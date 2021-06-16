@@ -35,7 +35,7 @@
 //登录相关错误码
 enum LoginStatus
 {
-	ERROR_LOGIN_SUCCESS = 0,				// 登录成功
+        ERROR_LOGIN_SUCCESS = 0,				// 登录成功
 		ERROR_LOGIN_FAILED,					// 登录失败
 		ERROR_LOGIN_TIMEOUT,				// 登录超时
 		ERROR_COMPONET_NOTOK,				// 控件未正确安装
